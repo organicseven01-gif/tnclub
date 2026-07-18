@@ -1,4 +1,4 @@
-import type { PontoCrescimentoMensal } from "@/mock/indicadores";
+import type { PontoCrescimentoMensal } from "@/utils/indicadores";
 
 interface GrowthChartProps {
   dados: PontoCrescimentoMensal[];

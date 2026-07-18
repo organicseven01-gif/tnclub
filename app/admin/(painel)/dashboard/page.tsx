@@ -8,7 +8,7 @@ import { listarBeneficios } from "@/services/beneficioService";
 import { listarHistoricoDetalhado } from "@/services/historicoService";
 import { listarResgates } from "@/services/resgateService";
 import { formatPoints } from "@/utils/formatters";
-import { crescimentoMensal } from "@/mock/indicadores";
+import { calcularCrescimentoMensal } from "@/utils/indicadores";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +27,8 @@ export default async function AdminDashboardPage() {
   const saldoTotal = clientes.reduce((total, cliente) => total + cliente.saldoPontos, 0);
   const ultimosAtendimentos = historico.slice(0, 5);
   const clientesPorId = new Map(clientes.map((cliente) => [cliente.id, cliente.nome]));
+
+  const crescimentoMensal = calcularCrescimentoMensal(historico);
 
   const semClientes = clientes.length === 0;
   const semServicos = servicos.length === 0;
@@ -86,7 +88,7 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <Card padding="lg">
-          <SectionTitle title="Crescimento de atendimentos" subtitle="Últimos 6 meses (fictício)" />
+          <SectionTitle title="Crescimento de atendimentos" subtitle="Últimos 6 meses" />
           <GrowthChart dados={crescimentoMensal} />
         </Card>
 
