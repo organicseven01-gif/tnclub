@@ -1,10 +1,11 @@
 import { Clock, Gift } from "lucide-react";
 import { PageShell } from "@/layout/PageShell";
 import { SectionTitle } from "@/components/ui";
-import { PointsCard, HistoryCard, QuickActionButton, SemClienteState } from "@/components/shared";
+import { PointsCard, HistoryCard, QuickActionButton, PointsExpiryAlert, SemClienteState } from "@/components/shared";
 import { getClienteAtual } from "@/services/clienteService";
 import { getHistoricoDetalhado } from "@/services/historicoService";
 import { getConfiguracao, getLimitesNivel } from "@/services/configuracaoService";
+import { getResumoValidadePontos } from "@/services/programaPontosService";
 
 // Dados vêm do Supabase e mudam a cada atendimento/resgate — nunca pré-renderizar estaticamente.
 export const dynamic = "force-dynamic";
@@ -20,9 +21,10 @@ export default async function DashboardPage() {
     );
   }
 
-  const [historico, configuracao] = await Promise.all([
+  const [historico, configuracao, resumoValidade] = await Promise.all([
     getHistoricoDetalhado(cliente.id),
     getConfiguracao(),
+    getResumoValidadePontos(cliente.id),
   ]);
   const ultimoServico = historico[0];
 
@@ -33,6 +35,8 @@ export default async function DashboardPage() {
         nivel={cliente.nivel}
         limites={getLimitesNivel(configuracao)}
       />
+
+      <PointsExpiryAlert resumo={resumoValidade} />
 
       {ultimoServico && (
         <div>

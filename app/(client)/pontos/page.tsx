@@ -1,10 +1,12 @@
 import { Receipt } from "lucide-react";
 import { PageShell } from "@/layout/PageShell";
 import { SectionTitle, EmptyState } from "@/components/ui";
-import { PointsCard, PointsMovementCard, SemClienteState } from "@/components/shared";
+import { PointsCard, PointsMovementCard, PointsExpiryAlert, SemClienteState } from "@/components/shared";
 import { getClienteAtual } from "@/services/clienteService";
 import { listarExtratoPontos } from "@/services/extratoService";
 import { getConfiguracao, getLimitesNivel } from "@/services/configuracaoService";
+import { getResumoValidadePontos } from "@/services/programaPontosService";
+import { formatDateShort } from "@/utils/formatters";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +21,10 @@ export default async function MeusPontosPage() {
     );
   }
 
-  const [extrato, configuracao] = await Promise.all([
+  const [extrato, configuracao, resumoValidade] = await Promise.all([
     listarExtratoPontos(cliente.id),
     getConfiguracao(),
+    getResumoValidadePontos(cliente.id),
   ]);
 
   return (
@@ -31,6 +34,14 @@ export default async function MeusPontosPage() {
         nivel={cliente.nivel}
         limites={getLimitesNivel(configuracao)}
       />
+
+      <PointsExpiryAlert resumo={resumoValidade} />
+
+      {resumoValidade.dataProximoVencimento && resumoValidade.pontosVencendoEmBreve <= 0 && (
+        <p className="text-center text-xs text-ink/45">
+          Próximos pontos a vencer em {formatDateShort(resumoValidade.dataProximoVencimento)}.
+        </p>
+      )}
 
       <div>
         <SectionTitle title="Extrato de pontos" />
