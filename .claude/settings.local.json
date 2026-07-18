@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(artifact-design)",
+      "Skill(artifact-design:*)",
+      "Bash(npm -v)",
+      "PowerShell(node -v)",
+      "PowerShell(npm -v)",
+      "PowerShell(Get-ChildItem \"$env:ProgramFiles\\\\nodejs\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\" -ErrorAction SilentlyContinue | Select-Object Name; where.exe node 2>&1)",
+      "PowerShell(winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements)",
+      "Bash(rm -f types/client.ts types/points.ts types/benefit.ts types/history.ts utils/mockData.ts services/clientService.ts services/pointsService.ts services/benefitsService.ts services/historyService.ts)",
+      "Bash(rm -rf components/home components/points components/client components/history components/benefits app/area-cliente)",
+      "Bash(mkdir -p \"\\(client\\)/pontos\" \"\\(client\\)/historico\" \"\\(client\\)/beneficios\" \"\\(client\\)/perfil\")",
+      "Bash(mv page.tsx \"\\(client\\)/page.tsx\")",
+      "Bash(mv pontos/page.tsx \"\\(client\\)/pontos/page.tsx\")",
+      "Bash(rmdir pontos *)",
+      "Bash(mv historico/page.tsx \"\\(client\\)/historico/page.tsx\")",
+      "Bash(xxd \"logo png.jpeg\")",
+      "Bash(curl -s -X POST https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"nome\":\"__teste_verificacao_logout__\",\"telefone\":\"00000000000\",\"cpf\":\"00000000000\"}')",
+      "Bash(curl -s -X POST https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"nome\":\"__teste_verificacao_logout__\",\"telefone\":\"00000000000\",\"cpf\":\"00000000000\",\"email\":\"teste.verificacao.logout@example.com\"}')",
+      "Bash(curl -s -X DELETE https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes?id=eq.ce8ca57f-5d5e-4bc3-bcc0-be63818a351d -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Prefer: return=representation')",
+      "Bash(npx tsc *)",
+      "Bash(rm -rf .next)",
+      "Bash(npm run *)"
+    ]
+  }
+}

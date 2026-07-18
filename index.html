@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SOS Limpa Tudo Estofados — Higienização em Bauru e região</title>
+<meta name="description" content="Higienização e impermeabilização de sofás, colchões, tapetes e bancos de carro em Bauru e região. Orçamento pelo WhatsApp." />
+<style>
+  :root {
+    --canvas: #F7F4EE;
+    --canvas-raised: #FFFFFF;
+    --ink: #2B2E2A;
+    --ink-soft: #6B6F65;
+    --line: #E3DED2;
+    --accent: #4F7B6B;
+    --accent-soft: #E4EDE8;
+    --accent-ink: #2E4A40;
+    --whatsapp: #25D366;
+    --whatsapp-ink: #ffffff;
+    --shadow: 0 1px 2px rgba(43,46,42,0.04), 0 8px 24px rgba(43,46,42,0.06);
+    --font-display: Georgia, 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --canvas: #1B1D19;
+      --canvas-raised: #232520;
+      --ink: #ECE8DD;
+      --ink-soft: #A6A99C;
+      --line: #34362E;
+      --accent: #85B39F;
+      --accent-soft: #263129;
+      --accent-ink: #CFE6DA;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #1B1D19;
+    --canvas-raised: #232520;
+    --ink: #ECE8DD;
+    --ink-soft: #A6A99C;
+    --line: #34362E;
+    --accent: #85B39F;
+    --accent-soft: #263129;
+    --accent-ink: #CFE6DA;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --canvas: #F7F4EE;
+    --canvas-raised: #FFFFFF;
+    --ink: #2B2E2A;
+    --ink-soft: #6B6F65;
+    --line: #E3DED2;
+    --accent: #4F7B6B;
+    --accent-soft: #E4EDE8;
+    --accent-ink: #2E4A40;
+    --shadow: 0 1px 2px rgba(43,46,42,0.04), 0 8px 24px rgba(43,46,42,0.06);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  a { color: inherit; }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .btn-whatsapp {
+    background: var(--whatsapp);
+    color: var(--whatsapp-ink);
+  }
+  .btn-whatsapp:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent-ink); }
+
+  /* ---------- Header ---------- */
+  header.top {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .brand span { color: var(--accent-ink); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 88px 0 72px;
+    position: relative;
+  }
+  .hero-inner {
+    max-width: 620px;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4vw, 3rem);
+    line-height: 1.12;
+    margin: 18px 0 20px;
+  }
+  .hero p.lead {
+    font-size: 1.08rem;
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin: 0 0 32px;
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .hero-note {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Section shell ---------- */
+  section { padding: 64px 0; }
+  section + section { border-top: 1px solid var(--line); }
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 40px;
+    max-width: 56ch;
+  }
+  .section-head h2 { font-size: clamp(1.5rem, 2.6vw, 1.9rem); }
+  .section-head p { color: var(--ink-soft); margin: 0; }
+
+  /* ---------- Services ---------- */
+  .services {
+    display: grid;
+    gap: 14px;
+  }
+  details.service {
+    background: var(--canvas-raised);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  details.service summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  details.service summary::-webkit-details-marker { display: none; }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .service-icon {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .service-icon svg { width: 24px; height: 24px; }
+  .service-title { flex: 1 1 auto; }
+  .service-title h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.05rem; }
+  .service-title p { margin: 3px 0 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .chevron {
+    flex: 0 0 auto;
+    width: 22px; height: 22px;
+    color: var(--ink-soft);
+    transition: transform 0.2s ease;
+  }
+  details[open] .chevron { transform: rotate(180deg); }
+
+  .service-body {
+    padding: 0 24px 26px;
+  }
+  .service-body p {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    max-width: 60ch;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .photo-tile {
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    color: rgba(255,255,255,0.92);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    background-blend-mode: multiply;
+  }
+  .photo-tile::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%);
+  }
+  .photo-tile span { position: relative; z-index: 1; }
+  .photo-tile svg { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; opacity: 0.85; z-index: 1; }
+
+  /* ---------- Como funciona ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .step {
+    padding: 22px 18px;
+    background: var(--canvas-raised);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .step h3 { font-family: var(--font-body); font-size: 0.98rem; font-weight: 600; margin-bottom: 6px; }
+  .step p { margin: 0; font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* ---------- Trust ---------- */
+  .trust {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 46px;
+  }
+  .stat { text-align: left; }
+  .stat .num {
+    font-family: var(--font-display);
+    font-size: 2.1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-ink);
+    display: block;
+  }
+  .stat .label { font-size: 0.85rem; color: var(--ink-soft); }
+
+  .testimonials {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  blockquote.testi {
+    margin: 0;
+    padding: 22px 24px;
+    background: var(--accent-soft);
+    border-radius: 14px;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--accent-ink);
+    line-height: 1.5;
+  }
+  blockquote.testi footer {
+    margin-top: 14px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    font-style: normal;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- Footer ---------- */
+  footer.site {
+    padding: 56px 0 40px;
+    border-top: 1px solid var(--line);
+  }
+  .footer-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-bottom: 36px;
+  }
+  .footer-contact { display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; color: var(--ink-soft); }
+  .footer-contact a { text-decoration: none; }
+  .footer-contact a:hover { color: var(--accent-ink); }
+  .footer-bottom {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* ---------- Floating WhatsApp ---------- */
+  .float-whatsapp {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--whatsapp);
+    color: var(--whatsapp-ink);
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 999px;
+    box-shadow: 0 6px 20px rgba(37,211,102,0.35), var(--shadow);
+    transition: padding 0.2s ease, transform 0.15s ease;
+  }
+  .float-whatsapp svg { width: 26px; height: 26px; flex: 0 0 auto; }
+  .float-whatsapp .fw-text {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: max-width 0.25s ease;
+  }
+  .float-whatsapp:hover { transform: translateY(-2px); }
+  .float-whatsapp:hover .fw-text,
+  .float-whatsapp:focus-visible .fw-text {
+    max-width: 160px;
+    margin-right: 2px;
+  }
+  .float-whatsapp:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+  @media (max-width: 760px) {
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .trust { grid-template-columns: 1fr; gap: 20px; }
+    .testimonials { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 48px; }
+    .footer-bottom { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand">SOS <span>Limpa Tudo</span> Estofados</div>
+    <a class="btn btn-ghost" href="https://wa.me/5514981869802?text=Ola!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20orcamento." target="_blank" rel="noopener">Orçamento</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Bauru e região</span>
+    <h1>Higienização de estofados, do jeito que a sua casa merece.</h1>
+    <p class="lead">Sofás, colchões, tapetes e bancos de carro — limpos, higienizados e protegidos no conforto da sua casa, com máquina extratora profissional.</p>
+    <div class="hero-actions">
+      <a class="btn btn-whatsapp" href="https://wa.me/5514981869802?text=Ola!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20orcamento." target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 0 1-1.27-4.38c0-4.55 3.71-8.26 8.28-8.26 2.21 0 4.29.86 5.85 2.42a8.21 8.21 0 0 1 2.42 5.85c0 4.56-3.71 8.23-8.28 8.23zm4.53-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.84-.86 2.04 0 1.2.88 2.37 1 2.53.12.17 1.73 2.64 4.2 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.11-.23-.17-.48-.29z"/></svg>
+        Falar no WhatsApp
+      </a>
+      <span class="hero-note">Resposta rápida &middot; Atendimento agendado</span>
+    </div>
+  </div>
+</section>
+
+<section id="servicos">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">O que a gente limpa</span>
+      <h2>Toque em um serviço para ver fotos de trabalhos já feitos</h2>
+      <p>Cada higienização é feita no local, com produtos neutros e máquina extratora profissional.</p>
+    </div>
+
+    <div class="services">
+
+      <details class="service" open>
+        <summary>
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v5a1 1 0 0 0 1 1h1v2M18 18v2M4 12V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M4 12h16M4 12a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1M20 12a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1"/></svg>
+          </span>
+          <span class="service-title">
+            <h3>Higienização de Sofás</h3>
+            <p>Sofás, poltronas e cadeiras estofadas</p>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="service-body">
+          <p>Remoção de manchas, odores e ácaros com produtos antialérgicos, sem molhar a estrutura do móvel.</p>
+          <div class="photo-grid">
+            <div class="photo-tile" style="background:linear-gradient(135deg,#7C9C8C,#4F7B6B);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Sofá — antes e depois</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#A9BFB0,#5E8A79);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Poltrona higienizada</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#88A997,#3E6656);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Detalhe do tecido</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="service">
+        <summary>
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="8" rx="1.5"/><path d="M3 17v2M21 17v2M6 9V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2M7 13h2M11 13h2M15 13h2"/></svg>
+          </span>
+          <span class="service-title">
+            <h3>Higienização de Colchões</h3>
+            <p>Colchões de casal, solteiro e box</p>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="service-body">
+          <p>Elimina ácaros e manchas, deixando o colchão limpo e seco para uma noite de sono mais saudável.</p>
+          <div class="photo-grid">
+            <div class="photo-tile" style="background:linear-gradient(135deg,#8FA9A0,#4F7B6B);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Colchão de casal</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#B7C9BC,#6C9683);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Extração de manchas</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#6E9384,#2E4A40);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Colchão finalizado</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="service">
+        <summary>
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M3 8h18M3 20h1M6 20h1M9 20h1M12 20h1M15 20h1M18 20h1M21 20h1"/></svg>
+          </span>
+          <span class="service-title">
+            <h3>Tapetes e Carpetes</h3>
+            <p>Tapetes, carpetes e cortinas</p>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="service-body">
+          <p>Lavagem profunda que remove sujeira encrustada e odores, recuperando a cor e a textura original.</p>
+          <div class="photo-grid">
+            <div class="photo-tile" style="background:linear-gradient(135deg,#9DB6A8,#4F7B6B);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Tapete sala de estar</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#C2D2C7,#7BA491);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Carpete de escritório</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="service">
+        <summary>
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l1.5-5A2 2 0 0 1 7.4 9.5h9.2a2 2 0 0 1 1.9 1.5L20 16"/><rect x="3" y="16" width="18" height="4" rx="1.5"/><circle cx="7.5" cy="20" r="1"/><circle cx="16.5" cy="20" r="1"/></svg>
+          </span>
+          <span class="service-title">
+            <h3>Higienização Automotiva</h3>
+            <p>Bancos, forração e teto do carro</p>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="service-body">
+          <p>Limpeza interna completa: bancos, carpete e teto, deixando o carro com cheiro de novo.</p>
+          <div class="photo-grid">
+            <div class="photo-tile" style="background:linear-gradient(135deg,#7FA292,#365448);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Banco dianteiro</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#A4BFAE,#547E6B);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Interior completo</span></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="service">
+        <summary>
+          <span class="service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <span class="service-title">
+            <h3>Impermeabilização</h3>
+            <p>Blindagem de sofás, poltronas e cadeiras</p>
+          </span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="service-body">
+          <p>Cria uma barreira invisível contra líquidos e manchas, protegendo o tecido por até 1 ano.</p>
+          <div class="photo-grid">
+            <div class="photo-tile" style="background:linear-gradient(135deg,#628C7B,#2E4A40);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Aplicação do produto</span></div>
+            <div class="photo-tile" style="background:linear-gradient(135deg,#96B7A5,#4F7B6B);"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="8.5" cy="12" r="1.5"/><path d="M3 15l4-3 4 3 5-4 5 4" /></svg><span>Teste de repelência</span></div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Como funciona</span>
+      <h2>Do primeiro contato à entrega, em quatro passos</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h3>Chama no WhatsApp</h3>
+        <p>Conta o que precisa e recebe o valor combinado.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h3>Agenda o horário</h3>
+        <p>Escolhe o dia e horário que ficar melhor pra você.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h3>Higienização no local</h3>
+        <p>Nossa equipe vai até você com máquina extratora profissional.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h3>Entrega limpo</h3>
+        <p>Estofado limpo, seco e com cheiro de novo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="confianca">
+  <div class="wrap">
+    <div class="trust">
+      <div class="stat">
+        <span class="num">5,0</span>
+        <span class="label">Nota no Google, mais de 300 avaliações</span>
+      </div>
+      <div class="stat">
+        <span class="num">1.000+</span>
+        <span class="label">Atendimentos realizados</span>
+      </div>
+      <div class="stat">
+        <span class="num">Bauru</span>
+        <span class="label">E toda a região atendida</span>
+      </div>
+    </div>
+    <div class="testimonials">
+      <blockquote class="testi">
+        “Em um dia limpei sofá, poltronas, colchões e os bancos do carro.”
+        <footer>Cliente &middot; avaliação no Google</footer>
+      </blockquote>
+      <blockquote class="testi">
+        “Entrega do serviço mais que o esperado, sem contar a qualidade do trabalho.”
+        <footer>Cliente &middot; avaliação no Google</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand">SOS <span>Limpa Tudo</span> Estofados</div>
+        <p style="color:var(--ink-soft); font-size:0.9rem; max-width:32ch; margin-top:10px;">Higienização e impermeabilização de estofados em Bauru e região.</p>
+      </div>
+      <div class="footer-contact">
+        <a href="https://wa.me/5514981869802?text=Ola!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20orcamento." target="_blank" rel="noopener">WhatsApp: (14) 98186-9802</a>
+        <a href="tel:+5514981869802">Ligar: (14) 98186-9802</a>
+        <a href="https://www.instagram.com/soslimpatudoestofados_bauru" target="_blank" rel="noopener">@soslimpatudoestofados_bauru</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>SOS Limpa Tudo Estofados &middot; Bauru — SP</span>
+      <span>&copy; 2026</span>
+    </div>
+  </div>
+</footer>
+
+<a class="float-whatsapp" href="https://wa.me/5514981869802?text=Ola!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20orcamento." target="_blank" rel="noopener" aria-label="Falar com a equipe no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 0 1-1.27-4.38c0-4.55 3.71-8.26 8.28-8.26 2.21 0 4.29.86 5.85 2.42a8.21 8.21 0 0 1 2.42 5.85c0 4.56-3.71 8.23-8.28 8.23zm4.53-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.84-.86 2.04 0 1.2.88 2.37 1 2.53.12.17 1.73 2.64 4.2 3.7.59.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.14-1.18-.06-.11-.23-.17-.48-.29z"/></svg>
+  <span class="fw-text">Falar com a equipe</span>
+</a>
+
+</body>
+</html>

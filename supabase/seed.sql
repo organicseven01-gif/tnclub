@@ -1,0 +1,26 @@
+-- =========================================================================
+-- TN Clean | Dados de demonstração (OPCIONAL — arquivo intencionalmente vazio)
+-- =========================================================================
+-- O projeto agora inicia com o banco totalmente vazio por padrão: não há
+-- mais nenhum cliente fixo de testes. Todas as telas (área do cliente e
+-- painel administrativo) já tratam corretamente tabelas vazias, mostrando
+-- estados vazios amigáveis em vez de erro.
+--
+-- Recomendado: cadastre seus primeiros dados reais pelo próprio painel
+-- administrativo, que já expõe os fluxos completos:
+--   /admin/clientes/novo
+--   /admin/servicos/novo
+--   /admin/beneficios/novo
+--   /admin/pontuacao (registrar o primeiro atendimento)
+--
+-- Se você rodou uma versão anterior deste arquivo (com clientes fictícios
+-- como "Marina Torres") e quer limpar o banco para começar do zero, rode o
+-- bloco abaixo no SQL Editor do Supabase:
+--
+-- truncate table
+--   public.resgates,
+--   public.atendimentos,
+--   public.beneficios,
+--   public.servicos,
+--   public.clientes
+-- restart identity cascade;
