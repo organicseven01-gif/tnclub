@@ -299,8 +299,11 @@ begin
    where id = 1
    returning * into v_config;
 
-  -- Reclassifica todos os clientes de acordo com os novos limites.
-  update public.clientes set nivel = public.fn_calcular_nivel(saldo_pontos);
+  -- Reclassifica os clientes cujo nível muda com os novos limites (o WHERE
+  -- também atende à exigência do Supabase de não permitir UPDATE sem cláusula).
+  update public.clientes
+     set nivel = public.fn_calcular_nivel(saldo_pontos)
+   where nivel is distinct from public.fn_calcular_nivel(saldo_pontos);
 
   return v_config;
 end;

@@ -75,7 +75,11 @@ begin
    where id = 1
    returning * into v_config;
 
-  update public.clientes set nivel = public.fn_calcular_nivel(saldo_pontos);
+  -- Só atualiza quem realmente muda de nível (e satisfaz a exigência do
+  -- Supabase de ter uma cláusula WHERE em todo UPDATE).
+  update public.clientes
+     set nivel = public.fn_calcular_nivel(saldo_pontos)
+   where nivel is distinct from public.fn_calcular_nivel(saldo_pontos);
 
   return v_config;
 end;
