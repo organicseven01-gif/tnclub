@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PageHeader } from "@/components/admin";
+import { PageHeader, EnviarBoasVindasWhatsApp } from "@/components/admin";
 import { ProfileCard } from "@/components/shared";
 import { buscarClientePorId } from "@/services/clienteService";
 
@@ -20,8 +20,9 @@ export default async function VisualizarClientePage({ params }: VisualizarClient
   return (
     <div>
       <PageHeader title="Detalhes do cliente" subtitle={cliente.nome} />
-      <div className="max-w-md">
+      <div className="max-w-md space-y-6">
         <ProfileCard cliente={cliente} editarHref={`/admin/clientes/${cliente.id}/editar`} />
+        <EnviarBoasVindasWhatsApp cliente={cliente} />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { criarCliente, atualizarCliente } from "@/services/clienteService";
+import { enviarEmailBoasVindas } from "@/services/emailService";
 import type { FormState, NivelFidelidade, StatusCliente } from "@/types";
 
 function lerDadosBasicos(formData: FormData) {
@@ -28,15 +29,21 @@ function revalidarTelasDoCliente(id?: string) {
 }
 
 export async function criarClienteAction(_prevState: FormState, formData: FormData): Promise<FormState> {
+  let novoClienteId: string;
+
   try {
     const dados = lerDadosBasicos(formData);
-    await criarCliente(dados);
+    const cliente = await criarCliente(dados);
+    novoClienteId = cliente.id;
+    // Boas-vindas por e-mail (best-effort: não bloqueia o cadastro se falhar).
+    await enviarEmailBoasVindas(cliente);
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Não foi possível cadastrar o cliente." };
   }
 
-  revalidarTelasDoCliente();
-  redirect("/admin/clientes");
+  revalidarTelasDoCliente(novoClienteId);
+  // Vai para a ficha do cliente, onde fica o botão de boas-vindas no WhatsApp.
+  redirect(`/admin/clientes/${novoClienteId}`);
 }
 
 export async function atualizarClienteAction(
