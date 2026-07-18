@@ -1,10 +1,9 @@
 import type { Cliente } from "@/types";
 import { assuntoBoasVindas, htmlBoasVindas } from "@/utils/boasVindas";
 
-// Remetente: começa com o domínio de teste do Resend. Depois de verificar o
-// domínio tnclub.com.br no Resend, troque para "TN Club <contato@tnclub.com.br>"
-// pela variável EMAIL_REMETENTE.
-const REMETENTE_PADRAO = "TN Club <onboarding@resend.dev>";
+// Remetente padrão: domínio tnclub.com.br já verificado no Resend. Pode ser
+// sobrescrito pela variável EMAIL_REMETENTE (ex.: outro endereço @tnclub.com.br).
+const REMETENTE_PADRAO = "TN Club <contato@tnclub.com.br>";
 
 // Envia o e-mail de boas-vindas via API do Resend. É "best-effort": nunca lança
 // erro para não impedir o cadastro do cliente. Retorna true se enviou.
