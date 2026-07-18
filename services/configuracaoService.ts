@@ -9,15 +9,24 @@ interface ConfiguracaoRow {
   limite_ouro: number;
   limite_platina: number;
   limite_diamante: number;
+  reais_por_ponto?: number;
+  pontos_por_real_desconto?: number;
+  validade_pontos_ativa?: boolean;
+  validade_pontos_dias?: number;
 }
 
-// Valores padrão usados quando ainda não há configuração salva no banco.
+// Valores padrão usados quando ainda não há configuração salva no banco
+// (ou quando a migração do programa de pontos ainda não foi executada).
 const CONFIGURACAO_PADRAO: Configuracao = {
   whatsapp: "",
   limitePrata: TIER_THRESHOLDS.prata,
   limiteOuro: TIER_THRESHOLDS.ouro,
   limitePlatina: TIER_THRESHOLDS.platina,
   limiteDiamante: TIER_THRESHOLDS.diamante,
+  reaisPorPonto: 3,
+  pontosPorRealDesconto: 3,
+  validadePontosAtiva: true,
+  validadePontosDias: 365,
 };
 
 function mapConfiguracao(row: ConfiguracaoRow): Configuracao {
@@ -27,6 +36,11 @@ function mapConfiguracao(row: ConfiguracaoRow): Configuracao {
     limiteOuro: row.limite_ouro,
     limitePlatina: row.limite_platina,
     limiteDiamante: row.limite_diamante,
+    reaisPorPonto: row.reais_por_ponto ?? CONFIGURACAO_PADRAO.reaisPorPonto,
+    pontosPorRealDesconto:
+      row.pontos_por_real_desconto ?? CONFIGURACAO_PADRAO.pontosPorRealDesconto,
+    validadePontosAtiva: row.validade_pontos_ativa ?? CONFIGURACAO_PADRAO.validadePontosAtiva,
+    validadePontosDias: row.validade_pontos_dias ?? CONFIGURACAO_PADRAO.validadePontosDias,
   };
 }
 
@@ -65,6 +79,10 @@ export async function salvarConfiguracao(dados: Configuracao): Promise<void> {
     p_limite_ouro: dados.limiteOuro,
     p_limite_platina: dados.limitePlatina,
     p_limite_diamante: dados.limiteDiamante,
+    p_reais_por_ponto: dados.reaisPorPonto,
+    p_pontos_por_real_desconto: dados.pontosPorRealDesconto,
+    p_validade_pontos_ativa: dados.validadePontosAtiva,
+    p_validade_pontos_dias: dados.validadePontosDias,
   });
 
   if (error) lancarErroAmigavel(error, "Não foi possível salvar as configurações.");

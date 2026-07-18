@@ -6,7 +6,6 @@ interface ServicoRow {
   id: string;
   nome: string;
   valor: number;
-  pontos: number;
   ativo: boolean;
 }
 
@@ -15,7 +14,6 @@ function mapServico(row: ServicoRow): Servico {
     id: row.id,
     nome: row.nome,
     valor: row.valor,
-    pontos: row.pontos,
     ativo: row.ativo,
   };
 }
@@ -38,12 +36,17 @@ export const buscarServicoPorId = getServicoPorId;
 export interface DadosServico {
   nome: string;
   valor: number;
-  pontos: number;
   ativo: boolean;
 }
 
 export async function criarServico(dados: DadosServico): Promise<Servico> {
-  const { data, error } = await supabase.from("servicos").insert(dados).select().single();
+  // "pontos: 0" garante compatibilidade com a coluna legada (os pontos agora
+  // são calculados automaticamente pelo valor, ver Programa de Pontos).
+  const { data, error } = await supabase
+    .from("servicos")
+    .insert({ ...dados, pontos: 0 })
+    .select()
+    .single();
   if (error) lancarErroAmigavel(error, "Não foi possível cadastrar o serviço.");
   return mapServico(data);
 }

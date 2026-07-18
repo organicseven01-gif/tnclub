@@ -37,15 +37,6 @@ export function ServicoForm({ servico, action }: ServicoFormProps) {
           placeholder="0,00"
           required
         />
-        <Input
-          label="Pontos gerados"
-          name="pontos"
-          type="number"
-          min={0}
-          defaultValue={servico?.pontos}
-          placeholder="0"
-          required
-        />
         <Select
           label="Status"
           name="ativo"
@@ -56,6 +47,11 @@ export function ServicoForm({ servico, action }: ServicoFormProps) {
           ]}
         />
       </div>
+
+      <p className="rounded-2xl bg-surface px-4 py-3 text-xs text-ink/50">
+        Os pontos são calculados automaticamente pelo valor do serviço, conforme as regras em{" "}
+        <strong>Configurações → Programa de pontos</strong>. Não é preciso informar pontos por serviço.
+      </p>
 
       <div className="flex flex-wrap gap-3">
         <Button type="submit" disabled={pending} fullWidth={false}>

@@ -1,12 +1,8 @@
-import type { Cliente, Servico } from "@/types";
+import type { Cliente } from "@/types";
 import { getNivelPorPontos } from "@/utils/tier";
 import { supabase } from "./supabase";
 import { lancarErroAmigavel } from "./supabaseErrors";
 import { buscarClientePorId } from "./clienteService";
-
-export function calcularPontos(servico: Servico, quantidade: number): number {
-  return servico.pontos * quantidade;
-}
 
 // Ajustes de saldo de uso geral (ex.: correção manual futura). Os fluxos
 // críticos (registrar atendimento, resgatar benefício) NÃO usam estas

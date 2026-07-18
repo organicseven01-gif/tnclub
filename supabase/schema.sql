@@ -50,7 +50,9 @@ create table if not exists public.servicos (
   id          uuid primary key default gen_random_uuid(),
   nome        text not null,
   valor       numeric(10, 2) not null,
-  pontos      integer not null,
+  -- Coluna mantida por compatibilidade; os pontos passaram a ser calculados
+  -- automaticamente pelo valor do serviço (ver registrar_atendimento).
+  pontos      integer not null default 0,
   ativo       boolean not null default true,
   created_at  timestamptz not null default now(),
 
@@ -132,13 +134,17 @@ comment on table public.resgates is 'Resgates de benefícios feitos pelos client
 -- CONFIGURAÇÕES (linha única, editada pelo administrador)
 -- -------------------------------------------------------------------------
 create table if not exists public.configuracoes (
-  id               smallint primary key default 1,
-  whatsapp         text not null default '',
-  limite_prata     integer not null default 500,
-  limite_ouro      integer not null default 1500,
-  limite_platina   integer not null default 3000,
-  limite_diamante  integer not null default 6000,
-  updated_at       timestamptz not null default now(),
+  id                       smallint primary key default 1,
+  whatsapp                 text not null default '',
+  limite_prata             integer not null default 500,
+  limite_ouro              integer not null default 1500,
+  limite_platina           integer not null default 3000,
+  limite_diamante          integer not null default 6000,
+  reais_por_ponto          numeric(10,2) not null default 3.00,
+  pontos_por_real_desconto integer not null default 3,
+  validade_pontos_ativa    boolean not null default true,
+  validade_pontos_dias     integer not null default 365,
+  updated_at               timestamptz not null default now(),
 
   constraint configuracoes_singleton check (id = 1),
   constraint configuracoes_ordem_check check (
@@ -153,9 +159,101 @@ insert into public.configuracoes (id) values (1) on conflict (id) do nothing;
 
 comment on table public.configuracoes is 'Configurações gerais do clube (linha única, id = 1).';
 
+-- -------------------------------------------------------------------------
+-- LOTES DE PONTOS (cada acúmulo vira um lote com validade própria)
+-- -------------------------------------------------------------------------
+create table if not exists public.pontos_lotes (
+  id                uuid primary key default gen_random_uuid(),
+  cliente_id        uuid not null references public.clientes (id) on delete cascade,
+  atendimento_id    uuid references public.atendimentos (id) on delete set null,
+  pontos            integer not null,
+  pontos_restantes  integer not null,
+  data_geracao      date not null default current_date,
+  data_vencimento   date,
+  created_at        timestamptz not null default now(),
+
+  constraint pontos_lotes_pontos_check check (pontos > 0),
+  constraint pontos_lotes_restantes_check check (pontos_restantes >= 0 and pontos_restantes <= pontos)
+);
+
+create index if not exists idx_pontos_lotes_cliente on public.pontos_lotes (cliente_id);
+create index if not exists idx_pontos_lotes_fifo on public.pontos_lotes (cliente_id, data_vencimento);
+
+comment on table public.pontos_lotes is 'Lotes de pontos gerados por atendimento, com validade individual (FIFO).';
+
 -- =========================================================================
 -- FUNÇÕES DE NEGÓCIO (executadas no banco para garantir atomicidade)
 -- =========================================================================
+
+-- Saldo disponível = soma dos lotes ainda não vencidos.
+create or replace function public.saldo_pontos_disponivel(p_cliente_id uuid)
+returns integer
+language sql
+stable
+as $$
+  select coalesce(sum(pontos_restantes), 0)::integer
+  from public.pontos_lotes
+  where cliente_id = p_cliente_id
+    and pontos_restantes > 0
+    and (data_vencimento is null or data_vencimento >= current_date);
+$$;
+
+-- Recalcula o saldo (cache) e o nível do cliente a partir dos lotes válidos.
+create or replace function public.atualizar_saldo_cliente(p_cliente_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_saldo integer;
+begin
+  v_saldo := public.saldo_pontos_disponivel(p_cliente_id);
+  update public.clientes
+     set saldo_pontos = v_saldo,
+         nivel = public.fn_calcular_nivel(v_saldo)
+   where id = p_cliente_id;
+end;
+$$;
+
+-- Consome N pontos via FIFO (vencimento mais próximo primeiro).
+create or replace function public.consumir_pontos_fifo(p_cliente_id uuid, p_quantidade integer)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_restante integer := p_quantidade;
+  v_lote     record;
+  v_usar     integer;
+begin
+  if p_quantidade is null or p_quantidade <= 0 then
+    return;
+  end if;
+
+  for v_lote in
+    select id, pontos_restantes
+      from public.pontos_lotes
+     where cliente_id = p_cliente_id
+       and pontos_restantes > 0
+       and (data_vencimento is null or data_vencimento >= current_date)
+     order by data_vencimento asc nulls last, data_geracao asc
+     for update
+  loop
+    exit when v_restante <= 0;
+    v_usar := least(v_lote.pontos_restantes, v_restante);
+    update public.pontos_lotes
+       set pontos_restantes = pontos_restantes - v_usar
+     where id = v_lote.id;
+    v_restante := v_restante - v_usar;
+  end loop;
+
+  if v_restante > 0 then
+    raise exception 'Saldo de pontos insuficiente.';
+  end if;
+end;
+$$;
 
 -- Calcula o nível de fidelidade a partir do saldo de pontos, usando os limites
 -- configurados pelo administrador (tabela public.configuracoes). É "stable"
@@ -176,8 +274,9 @@ as $$
   where c.id = 1;
 $$;
 
--- Registra um atendimento e atualiza o saldo/nível do cliente em uma única
--- transação: se qualquer etapa falhar, nada é gravado.
+-- Registra um atendimento: calcula os pontos automaticamente pelo valor do
+-- serviço (config.reais_por_ponto), cria um lote de pontos com validade e
+-- recalcula saldo/nível — tudo em uma única transação.
 create or replace function public.registrar_atendimento(
   p_cliente_id uuid,
   p_servico_id uuid,
@@ -190,10 +289,12 @@ security definer
 set search_path = public
 as $$
 declare
-  v_servico            public.servicos%rowtype;
-  v_pontos_gerados      integer;
-  v_valor_total         numeric(10, 2);
-  v_novo_atendimento    public.atendimentos%rowtype;
+  v_servico     public.servicos%rowtype;
+  v_config      public.configuracoes%rowtype;
+  v_valor_total numeric(10, 2);
+  v_pontos      integer;
+  v_vencimento  date;
+  v_atend       public.atendimentos%rowtype;
 begin
   if p_quantidade is null or p_quantidade <= 0 then
     raise exception 'A quantidade deve ser maior que zero.';
@@ -208,21 +309,35 @@ begin
     raise exception 'Serviço não encontrado.';
   end if;
 
-  v_pontos_gerados := v_servico.pontos * p_quantidade;
+  select * into v_config from public.configuracoes where id = 1;
+
   v_valor_total := v_servico.valor * p_quantidade;
+  v_pontos := floor(v_valor_total / nullif(v_config.reais_por_ponto, 0))::integer;
+  if v_pontos is null then
+    v_pontos := 0;
+  end if;
+
+  if v_config.validade_pontos_ativa then
+    v_vencimento := current_date + (v_config.validade_pontos_dias || ' days')::interval;
+  else
+    v_vencimento := null;
+  end if;
 
   insert into public.atendimentos
     (cliente_id, servico_id, quantidade, valor_total, pontos_gerados, observacao, data_atendimento)
   values
-    (p_cliente_id, p_servico_id, p_quantidade, v_valor_total, v_pontos_gerados, coalesce(p_observacao, ''), current_date)
-  returning * into v_novo_atendimento;
+    (p_cliente_id, p_servico_id, p_quantidade, v_valor_total, v_pontos, coalesce(p_observacao, ''), current_date)
+  returning * into v_atend;
 
-  update public.clientes
-     set saldo_pontos = saldo_pontos + v_pontos_gerados,
-         nivel = public.fn_calcular_nivel(saldo_pontos + v_pontos_gerados)
-   where id = p_cliente_id;
+  if v_pontos > 0 then
+    insert into public.pontos_lotes
+      (cliente_id, atendimento_id, pontos, pontos_restantes, data_geracao, data_vencimento)
+    values
+      (p_cliente_id, v_atend.id, v_pontos, v_pontos, current_date, v_vencimento);
+  end if;
 
-  return v_novo_atendimento;
+  perform public.atualizar_saldo_cliente(p_cliente_id);
+  return v_atend;
 end;
 $$;
 
@@ -239,12 +354,10 @@ security definer
 set search_path = public
 as $$
 declare
-  v_cliente     public.clientes%rowtype;
-  v_beneficio   public.beneficios%rowtype;
+  v_beneficio    public.beneficios%rowtype;
   v_novo_resgate public.resgates%rowtype;
 begin
-  select * into v_cliente from public.clientes where id = p_cliente_id for update;
-  if not found then
+  if not exists (select 1 from public.clientes where id = p_cliente_id) then
     raise exception 'Cliente não encontrado.';
   end if;
 
@@ -253,33 +366,33 @@ begin
     raise exception 'Este benefício não está mais disponível.';
   end if;
 
-  if v_cliente.saldo_pontos < v_beneficio.pontos_necessarios then
-    raise exception 'Saldo insuficiente. Faltam % pts para resgatar este benefício.',
-      (v_beneficio.pontos_necessarios - v_cliente.saldo_pontos);
+  if public.saldo_pontos_disponivel(p_cliente_id) < v_beneficio.pontos_necessarios then
+    raise exception 'Saldo insuficiente para resgatar este benefício.';
   end if;
 
   insert into public.resgates (cliente_id, beneficio_id, pontos_utilizados, status)
   values (p_cliente_id, p_beneficio_id, v_beneficio.pontos_necessarios, 'concluido')
   returning * into v_novo_resgate;
 
-  update public.clientes
-     set saldo_pontos = saldo_pontos - v_beneficio.pontos_necessarios,
-         nivel = public.fn_calcular_nivel(saldo_pontos - v_beneficio.pontos_necessarios)
-   where id = p_cliente_id;
+  perform public.consumir_pontos_fifo(p_cliente_id, v_beneficio.pontos_necessarios);
+  perform public.atualizar_saldo_cliente(p_cliente_id);
 
   return v_novo_resgate;
 end;
 $$;
 
--- Salva as configurações (WhatsApp + limites dos níveis) e reclassifica todos
--- os clientes com os novos limites — tudo em uma única transação. A restrição
--- configuracoes_ordem_check garante que os limites estejam em ordem crescente.
+-- Salva as configurações (WhatsApp, limites dos níveis e regras do programa de
+-- pontos) e reclassifica todos os clientes — tudo em uma única transação.
 create or replace function public.salvar_configuracao(
   p_whatsapp text,
   p_limite_prata integer,
   p_limite_ouro integer,
   p_limite_platina integer,
-  p_limite_diamante integer
+  p_limite_diamante integer,
+  p_reais_por_ponto numeric,
+  p_pontos_por_real_desconto integer,
+  p_validade_pontos_ativa boolean,
+  p_validade_pontos_dias integer
 )
 returns public.configuracoes
 language plpgsql
@@ -290,20 +403,24 @@ declare
   v_config public.configuracoes%rowtype;
 begin
   update public.configuracoes
-     set whatsapp        = coalesce(p_whatsapp, ''),
-         limite_prata    = p_limite_prata,
-         limite_ouro     = p_limite_ouro,
-         limite_platina  = p_limite_platina,
-         limite_diamante = p_limite_diamante,
-         updated_at      = now()
+     set whatsapp                 = coalesce(p_whatsapp, ''),
+         limite_prata             = p_limite_prata,
+         limite_ouro              = p_limite_ouro,
+         limite_platina           = p_limite_platina,
+         limite_diamante          = p_limite_diamante,
+         reais_por_ponto          = p_reais_por_ponto,
+         pontos_por_real_desconto = p_pontos_por_real_desconto,
+         validade_pontos_ativa    = p_validade_pontos_ativa,
+         validade_pontos_dias     = p_validade_pontos_dias,
+         updated_at               = now()
    where id = 1
    returning * into v_config;
 
   -- Reclassifica os clientes cujo nível muda com os novos limites (o WHERE
   -- também atende à exigência do Supabase de não permitir UPDATE sem cláusula).
-  update public.clientes
-     set nivel = public.fn_calcular_nivel(saldo_pontos)
-   where nivel is distinct from public.fn_calcular_nivel(saldo_pontos);
+  update public.clientes c
+     set nivel = public.fn_calcular_nivel(public.saldo_pontos_disponivel(c.id))
+   where c.nivel is distinct from public.fn_calcular_nivel(public.saldo_pontos_disponivel(c.id));
 
   return v_config;
 end;
@@ -324,6 +441,7 @@ alter table public.atendimentos enable row level security;
 alter table public.beneficios  enable row level security;
 alter table public.resgates    enable row level security;
 alter table public.configuracoes enable row level security;
+alter table public.pontos_lotes enable row level security;
 
 create policy "temp_acesso_total_clientes" on public.clientes
   for all using (true) with check (true);
@@ -341,6 +459,9 @@ create policy "temp_acesso_total_resgates" on public.resgates
   for all using (true) with check (true);
 
 create policy "temp_acesso_total_configuracoes" on public.configuracoes
+  for all using (true) with check (true);
+
+create policy "temp_acesso_total_pontos_lotes" on public.pontos_lotes
   for all using (true) with check (true);
 
 -- Exemplo do que as políticas da Etapa 6 devem fazer (não executar ainda):

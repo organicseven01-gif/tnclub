@@ -8,7 +8,6 @@ import type { FormState } from "@/types";
 function lerCampos(formData: FormData) {
   const nome = String(formData.get("nome") ?? "").trim();
   const valor = Number(formData.get("valor") ?? 0);
-  const pontos = Number(formData.get("pontos") ?? 0);
   const ativo = formData.get("ativo") === "true";
 
   if (!nome) {
@@ -19,11 +18,7 @@ function lerCampos(formData: FormData) {
     throw new Error("Informe um valor válido.");
   }
 
-  if (!Number.isFinite(pontos) || pontos < 0) {
-    throw new Error("Os pontos não podem ser negativos.");
-  }
-
-  return { nome, valor, pontos, ativo };
+  return { nome, valor, ativo };
 }
 
 export async function criarServicoAction(_prevState: FormState, formData: FormData): Promise<FormState> {

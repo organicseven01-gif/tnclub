@@ -4,7 +4,7 @@ import { PageHeader, ConfirmSubmitButton } from "@/components/admin";
 import { Table, Badge, Button } from "@/components/ui";
 import type { TableColumn } from "@/components/ui";
 import { listarServicos } from "@/services/servicoService";
-import { formatCurrency, formatPoints } from "@/utils/formatters";
+import { formatCurrency } from "@/utils/formatters";
 import { excluirServicoAction } from "./actions";
 import type { Servico } from "@/types";
 
@@ -19,7 +19,6 @@ export default async function ServicosPage() {
       render: (servico) => <span className="font-medium text-ink">{servico.nome}</span>,
     },
     { header: "Valor", render: (servico) => formatCurrency(servico.valor) },
-    { header: "Pontos", render: (servico) => formatPoints(servico.pontos) },
     {
       header: "Status",
       render: (servico) => (

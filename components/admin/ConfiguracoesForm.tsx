@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { MessageCircle, Award } from "lucide-react";
-import { Card, Input, MaskedInput, SectionTitle, Button, Alert } from "@/components/ui";
+import { MessageCircle, Award, Coins } from "lucide-react";
+import { Card, Input, MaskedInput, Select, SectionTitle, Button, Alert } from "@/components/ui";
 import { maskTelefone } from "@/utils/formatters";
 import { TIER_LABELS } from "@/utils/constants";
 import { initialFormState } from "@/types";
@@ -44,6 +44,60 @@ export function ConfiguracoesForm({ configuracao, action }: ConfiguracoesFormPro
         <p className="text-xs text-ink/50">
           Deixe em branco para esconder o botão de WhatsApp no aplicativo do cliente.
         </p>
+      </Card>
+
+      <Card padding="lg" className="space-y-5">
+        <SectionTitle
+          title="Programa de pontos"
+          subtitle="Regras de acúmulo, desconto e validade dos pontos"
+        />
+
+        <div className="flex items-start gap-3 rounded-2xl bg-surface px-4 py-3">
+          <Coins size={18} className="mt-0.5 shrink-0 text-brand-dark" strokeWidth={1.75} />
+          <p className="text-xs leading-relaxed text-ink/60">
+            Os pontos são calculados automaticamente pelo valor do serviço. Ex.: com{" "}
+            <strong className="text-ink">R$ {configuracao.reaisPorPonto} = 1 ponto</strong> e{" "}
+            <strong className="text-ink">{configuracao.pontosPorRealDesconto} pontos = R$ 1,00</strong>,
+            um serviço de R$ 270 gera 90 pontos, que valem R$ 30 de desconto.
+          </p>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Input
+            label="Reais por 1 ponto (acúmulo)"
+            name="reaisPorPonto"
+            type="number"
+            min={0.01}
+            step="0.01"
+            defaultValue={configuracao.reaisPorPonto}
+            required
+          />
+          <Input
+            label="Pontos por R$ 1,00 de desconto"
+            name="pontosPorRealDesconto"
+            type="number"
+            min={1}
+            defaultValue={configuracao.pontosPorRealDesconto}
+            required
+          />
+          <Select
+            label="Validade dos pontos"
+            name="validadePontosAtiva"
+            defaultValue={String(configuracao.validadePontosAtiva)}
+            options={[
+              { value: "true", label: "Ativada" },
+              { value: "false", label: "Desativada (não expiram)" },
+            ]}
+          />
+          <Input
+            label="Período de validade (dias)"
+            name="validadePontosDias"
+            type="number"
+            min={1}
+            defaultValue={configuracao.validadePontosDias}
+            required
+          />
+        </div>
       </Card>
 
       <Card padding="lg" className="space-y-5">

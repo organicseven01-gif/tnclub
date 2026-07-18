@@ -14,6 +14,11 @@ export async function salvarConfiguracaoAction(
   const limitePlatina = Number(formData.get("limitePlatina") ?? 0);
   const limiteDiamante = Number(formData.get("limiteDiamante") ?? 0);
 
+  const reaisPorPonto = Number(formData.get("reaisPorPonto") ?? 0);
+  const pontosPorRealDesconto = Number(formData.get("pontosPorRealDesconto") ?? 0);
+  const validadePontosAtiva = formData.get("validadePontosAtiva") === "true";
+  const validadePontosDias = Number(formData.get("validadePontosDias") ?? 0);
+
   const limites = [limitePrata, limiteOuro, limitePlatina, limiteDiamante];
 
   if (limites.some((valor) => !Number.isFinite(valor) || valor <= 0)) {
@@ -29,8 +34,30 @@ export async function salvarConfiguracaoAction(
     };
   }
 
+  if (!Number.isFinite(reaisPorPonto) || reaisPorPonto <= 0) {
+    return { error: "Informe quantos reais valem 1 ponto (maior que zero)." };
+  }
+
+  if (!Number.isInteger(pontosPorRealDesconto) || pontosPorRealDesconto <= 0) {
+    return { error: "Informe quantos pontos valem R$ 1,00 de desconto (número inteiro maior que zero)." };
+  }
+
+  if (!Number.isInteger(validadePontosDias) || validadePontosDias <= 0) {
+    return { error: "Informe o período de validade dos pontos em dias (maior que zero)." };
+  }
+
   try {
-    await salvarConfiguracao({ whatsapp, limitePrata, limiteOuro, limitePlatina, limiteDiamante });
+    await salvarConfiguracao({
+      whatsapp,
+      limitePrata,
+      limiteOuro,
+      limitePlatina,
+      limiteDiamante,
+      reaisPorPonto,
+      pontosPorRealDesconto,
+      validadePontosAtiva,
+      validadePontosDias,
+    });
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Não foi possível salvar as configurações.",

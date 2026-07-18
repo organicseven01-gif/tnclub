@@ -1,7 +1,8 @@
 import type { HistoricoDetalhado } from "@/types";
 import { supabase } from "./supabase";
 import { getServicoPorId } from "./servicoService";
-import { calcularPontos } from "./pontosService";
+import { getConfiguracao } from "./configuracaoService";
+import { calcularPontosPorValor } from "@/utils/pontosPrograma";
 
 export interface DadosAtendimento {
   clienteId: string;
@@ -19,13 +20,15 @@ export async function calcularResumoAtendimento(
   servicoId: string,
   quantidade: number
 ): Promise<ResumoAtendimento | null> {
-  const servico = await getServicoPorId(servicoId);
+  const [servico, config] = await Promise.all([getServicoPorId(servicoId), getConfiguracao()]);
 
   if (!servico || quantidade <= 0) return null;
 
+  const valorTotal = servico.valor * quantidade;
+
   return {
-    valorTotal: servico.valor * quantidade,
-    pontosGerados: calcularPontos(servico, quantidade),
+    valorTotal,
+    pontosGerados: calcularPontosPorValor(valorTotal, config.reaisPorPonto),
   };
 }
 

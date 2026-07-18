@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { Button, Card, Input, Select, Textarea, Alert } from "@/components/ui";
 import { formatCurrency, formatPoints } from "@/utils/formatters";
+import { calcularPontosPorValor } from "@/utils/pontosPrograma";
 import { initialFormState } from "@/types";
 import type { Cliente, Servico, FormState } from "@/types";
 
 interface PontuacaoFormProps {
   clientes: Cliente[];
   servicos: Servico[];
+  reaisPorPonto: number;
   action: (prevState: FormState, formData: FormData) => Promise<FormState>;
 }
 
@@ -26,7 +28,7 @@ function criarItem(servicoId: string): ItemAtendimento {
   return { chave: proximaChave++, servicoId, quantidade: 1 };
 }
 
-export function PontuacaoForm({ clientes, servicos, action }: PontuacaoFormProps) {
+export function PontuacaoForm({ clientes, servicos, reaisPorPonto, action }: PontuacaoFormProps) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(async (prevState: FormState, formData: FormData) => {
     const resultado = await action(prevState, formData);
@@ -55,12 +57,15 @@ export function PontuacaoForm({ clientes, servicos, action }: PontuacaoFormProps
     for (const item of itens) {
       const servico = servicos.find((s) => s.id === item.servicoId);
       if (!servico || item.quantidade <= 0) continue;
-      valorTotal += servico.valor * item.quantidade;
-      pontosGerados += servico.pontos * item.quantidade;
+      const valorItem = servico.valor * item.quantidade;
+      valorTotal += valorItem;
+      // Cada serviço vira um atendimento próprio no banco, então os pontos são
+      // calculados por item (mesma conta da função registrar_atendimento).
+      pontosGerados += calcularPontosPorValor(valorItem, reaisPorPonto);
     }
 
     return valorTotal > 0 || pontosGerados > 0 ? { valorTotal, pontosGerados } : null;
-  }, [itens, servicos]);
+  }, [itens, servicos, reaisPorPonto]);
 
   const itensValidos = itens.some((item) => item.servicoId && item.quantidade > 0);
 
