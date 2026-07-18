@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { registrarMultiplosAtendimentos, type ItemAtendimento } from "@/services/pontuacaoService";
+import { registrarVenda, type ItemAtendimento } from "@/services/pontuacaoService";
+import { formatCurrency, formatPoints } from "@/utils/formatters";
 import type { FormState } from "@/types";
 
 export async function registrarAtendimentoAction(
@@ -10,6 +11,7 @@ export async function registrarAtendimentoAction(
 ): Promise<FormState> {
   const clienteId = String(formData.get("clienteId") ?? "");
   const observacao = String(formData.get("observacao") ?? "");
+  const descontoReais = Math.max(0, Math.floor(Number(formData.get("descontoReais") ?? 0)) || 0);
 
   if (!clienteId) {
     return { error: "Selecione um cliente." };
@@ -37,8 +39,9 @@ export async function registrarAtendimentoAction(
     return { error: "Adicione ao menos um serviço." };
   }
 
+  let resumo;
   try {
-    await registrarMultiplosAtendimentos(clienteId, observacao, itens);
+    resumo = await registrarVenda(clienteId, itens, observacao, descontoReais);
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Não foi possível registrar o atendimento.",
@@ -53,5 +56,12 @@ export async function registrarAtendimentoAction(
   revalidatePath("/historico");
   revalidatePath("/perfil");
 
-  return { success: true };
+  const info =
+    resumo.descontoReais > 0
+      ? `Valor a pagar: ${formatCurrency(resumo.valorPagar)} · Desconto de ${formatCurrency(
+          resumo.descontoReais
+        )} (${formatPoints(resumo.pontosUtilizados)}) · +${formatPoints(resumo.pontosGerados)} gerados`
+      : `Valor: ${formatCurrency(resumo.valorTotal)} · +${formatPoints(resumo.pontosGerados)} gerados`;
+
+  return { success: true, info };
 }

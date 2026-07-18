@@ -26,6 +26,7 @@ export default async function PontuacaoPage() {
         clientes={clientesAtivos}
         servicos={servicosAtivos}
         reaisPorPonto={configuracao.reaisPorPonto}
+        pontosPorRealDesconto={configuracao.pontosPorRealDesconto}
         action={registrarAtendimentoAction}
       />
     </div>
