@@ -9,3 +9,4 @@ export * from "./PontuacaoForm";
 export * from "./HistoricoFilters";
 export * from "./StatusToggleForm";
 export * from "./ConfirmSubmitButton";
+export * from "./ConfiguracoesForm";

@@ -7,3 +7,4 @@ export * from "./ProgressSection";
 export * from "./QuickActionButton";
 export * from "./PointsMovementCard";
 export * from "./SemClienteState";
+export * from "./WhatsAppButton";

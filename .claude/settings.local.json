@@ -21,7 +21,13 @@
       "Bash(curl -s -X DELETE https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes?id=eq.ce8ca57f-5d5e-4bc3-bcc0-be63818a351d -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Prefer: return=representation')",
       "Bash(npx tsc *)",
       "Bash(rm -rf .next)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(python -c \"import PIL; print\\('PIL/Pillow disponível:', PIL.__version__\\)\")",
+      "Bash(node -e \"console.log\\('node ok'\\)\")",
+      "Bash(curl -s -X DELETE https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes?id=eq.c3c71961-5360-41f1-a669-28478b50a576 -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -o /dev/null -w 'Removido \\(HTTP %{http_code}\\)\\\\n')",
+      "Bash(curl -s https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/configuracoes?select=* -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk')",
+      "Bash(curl -s -X POST https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"nome\":\"__teste_config__\",\"telefone\":\"11988887777\",\"cpf\":\"11122233344\",\"email\":\"teste.config@example.com\",\"saldo_pontos\":700}')",
+      "Bash(curl -s -X DELETE https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes?id=eq.e06351dc-f22f-435f-8937-cead1e7f0efe -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -o /dev/null -w 'Cliente de teste removido \\(HTTP %{http_code}\\)\\\\n')"
     ]
   }
 }

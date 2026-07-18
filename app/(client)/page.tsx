@@ -38,8 +38,10 @@ export default function LandingPage() {
 
       <div className="relative flex flex-1 flex-col">
         <div className="animate-fade-in-up flex flex-col items-center text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-tn-club.jpg" alt="TN Club" className="h-20 w-auto object-contain" />
+          <div className="h-24 w-24 overflow-hidden rounded-[28px] shadow-card">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
+          </div>
           <h1 className="mt-5 text-2xl font-bold tracking-tight text-ink">
             Clube de Benefícios TN Clean
           </h1>

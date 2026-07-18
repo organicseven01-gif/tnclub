@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Droplets, LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ADMIN_NAV_ITEMS, APP_NAME } from "@/utils/constants";
 import { sairAdminAction } from "@/app/admin/(painel)/actions";
@@ -11,8 +11,9 @@ import { sairAdminAction } from "@/app/admin/(painel)/actions";
 function Brand() {
   return (
     <div className="flex items-center gap-3 px-6 py-6">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-light/15">
-        <Droplets size={20} className="text-brand-light" strokeWidth={2} />
+      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
       </div>
       <div>
         <p className="text-sm font-bold leading-tight text-white">{APP_NAME}</p>
@@ -71,7 +72,10 @@ export function AdminSidebar() {
     <>
       <header className="flex items-center justify-between border-b border-black/5 bg-brand-dark px-4 py-4 lg:hidden">
         <div className="flex items-center gap-2.5">
-          <Droplets size={18} className="text-brand-light" strokeWidth={2} />
+          <div className="h-8 w-8 overflow-hidden rounded-lg">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
+          </div>
           <span className="text-sm font-bold text-white">{APP_NAME} Admin</span>
         </div>
         <button

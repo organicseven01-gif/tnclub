@@ -4,6 +4,7 @@ import { SectionTitle, EmptyState } from "@/components/ui";
 import { PointsCard, PointsMovementCard, SemClienteState } from "@/components/shared";
 import { getClienteAtual } from "@/services/clienteService";
 import { listarExtratoPontos } from "@/services/extratoService";
+import { getConfiguracao, getLimitesNivel } from "@/services/configuracaoService";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,18 @@ export default async function MeusPontosPage() {
     );
   }
 
-  const extrato = await listarExtratoPontos(cliente.id);
+  const [extrato, configuracao] = await Promise.all([
+    listarExtratoPontos(cliente.id),
+    getConfiguracao(),
+  ]);
 
   return (
     <PageShell title="Meus pontos" subtitle="Consulta de saldo e progresso">
-      <PointsCard saldoPontos={cliente.saldoPontos} nivel={cliente.nivel} />
+      <PointsCard
+        saldoPontos={cliente.saldoPontos}
+        nivel={cliente.nivel}
+        limites={getLimitesNivel(configuracao)}
+      />
 
       <div>
         <SectionTitle title="Extrato de pontos" />

@@ -6,3 +6,4 @@ export * from "./pontuacaoService";
 export * from "./pontosService";
 export * from "./resgateService";
 export * from "./extratoService";
+export * from "./configuracaoService";

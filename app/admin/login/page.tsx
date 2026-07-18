@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Droplets } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Card, Input, Button, Alert } from "@/components/ui";
 import { initialFormState } from "@/types";
 import { entrarComoAdminAction } from "./actions";
@@ -19,8 +19,9 @@ export default function AdminLoginPage() {
 
       <Card padding="lg" className="w-full max-w-sm">
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-dark">
-            <Droplets size={22} className="text-brand-light" strokeWidth={2} />
+          <div className="h-14 w-14 overflow-hidden rounded-2xl shadow-card">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
           </div>
           <h1 className="mt-4 text-xl font-bold text-ink">Login Administrativo</h1>
           <p className="mt-1 text-sm text-ink/55">Acesse o painel de gestão do Clube de Benefícios.</p>

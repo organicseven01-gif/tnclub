@@ -128,25 +128,52 @@ create index if not exists idx_resgates_beneficio_id on public.resgates (benefic
 
 comment on table public.resgates is 'Resgates de benefícios feitos pelos clientes.';
 
+-- -------------------------------------------------------------------------
+-- CONFIGURAÇÕES (linha única, editada pelo administrador)
+-- -------------------------------------------------------------------------
+create table if not exists public.configuracoes (
+  id               smallint primary key default 1,
+  whatsapp         text not null default '',
+  limite_prata     integer not null default 500,
+  limite_ouro      integer not null default 1500,
+  limite_platina   integer not null default 3000,
+  limite_diamante  integer not null default 6000,
+  updated_at       timestamptz not null default now(),
+
+  constraint configuracoes_singleton check (id = 1),
+  constraint configuracoes_ordem_check check (
+    limite_prata > 0
+    and limite_prata < limite_ouro
+    and limite_ouro < limite_platina
+    and limite_platina < limite_diamante
+  )
+);
+
+insert into public.configuracoes (id) values (1) on conflict (id) do nothing;
+
+comment on table public.configuracoes is 'Configurações gerais do clube (linha única, id = 1).';
+
 -- =========================================================================
 -- FUNÇÕES DE NEGÓCIO (executadas no banco para garantir atomicidade)
 -- =========================================================================
 
--- Calcula o nível de fidelidade a partir do saldo de pontos.
--- IMPORTANTE: os limites abaixo devem ficar em sincronia com
--- TIER_THRESHOLDS em "utils/constants.ts". Se alterar um lado, altere o outro.
+-- Calcula o nível de fidelidade a partir do saldo de pontos, usando os limites
+-- configurados pelo administrador (tabela public.configuracoes). É "stable"
+-- (não "immutable") porque lê de uma tabela.
 create or replace function public.fn_calcular_nivel(p_saldo integer)
 returns text
 language sql
-immutable
+stable
 as $$
   select case
-    when p_saldo >= 6000 then 'diamante'
-    when p_saldo >= 3000 then 'platina'
-    when p_saldo >= 1500 then 'ouro'
-    when p_saldo >= 500  then 'prata'
+    when p_saldo >= c.limite_diamante then 'diamante'
+    when p_saldo >= c.limite_platina  then 'platina'
+    when p_saldo >= c.limite_ouro     then 'ouro'
+    when p_saldo >= c.limite_prata    then 'prata'
     else 'bronze'
-  end;
+  end
+  from public.configuracoes c
+  where c.id = 1;
 $$;
 
 -- Registra um atendimento e atualiza o saldo/nível do cliente em uma única
@@ -244,6 +271,41 @@ begin
 end;
 $$;
 
+-- Salva as configurações (WhatsApp + limites dos níveis) e reclassifica todos
+-- os clientes com os novos limites — tudo em uma única transação. A restrição
+-- configuracoes_ordem_check garante que os limites estejam em ordem crescente.
+create or replace function public.salvar_configuracao(
+  p_whatsapp text,
+  p_limite_prata integer,
+  p_limite_ouro integer,
+  p_limite_platina integer,
+  p_limite_diamante integer
+)
+returns public.configuracoes
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_config public.configuracoes%rowtype;
+begin
+  update public.configuracoes
+     set whatsapp        = coalesce(p_whatsapp, ''),
+         limite_prata    = p_limite_prata,
+         limite_ouro     = p_limite_ouro,
+         limite_platina  = p_limite_platina,
+         limite_diamante = p_limite_diamante,
+         updated_at      = now()
+   where id = 1
+   returning * into v_config;
+
+  -- Reclassifica todos os clientes de acordo com os novos limites.
+  update public.clientes set nivel = public.fn_calcular_nivel(saldo_pontos);
+
+  return v_config;
+end;
+$$;
+
 -- =========================================================================
 -- ROW LEVEL SECURITY
 -- =========================================================================
@@ -258,6 +320,7 @@ alter table public.servicos    enable row level security;
 alter table public.atendimentos enable row level security;
 alter table public.beneficios  enable row level security;
 alter table public.resgates    enable row level security;
+alter table public.configuracoes enable row level security;
 
 create policy "temp_acesso_total_clientes" on public.clientes
   for all using (true) with check (true);
@@ -272,6 +335,9 @@ create policy "temp_acesso_total_beneficios" on public.beneficios
   for all using (true) with check (true);
 
 create policy "temp_acesso_total_resgates" on public.resgates
+  for all using (true) with check (true);
+
+create policy "temp_acesso_total_configuracoes" on public.configuracoes
   for all using (true) with check (true);
 
 -- Exemplo do que as políticas da Etapa 6 devem fazer (não executar ainda):

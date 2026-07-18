@@ -7,7 +7,13 @@ export interface ProgressoNivel {
   pontosRestantes: number;
 }
 
-export function getProgressoNivel(saldoPontos: number, nivel: NivelFidelidade): ProgressoNivel {
+// Os limites podem vir das configurações do admin (banco). Quando não são
+// informados, caímos nos valores padrão de TIER_THRESHOLDS.
+export function getProgressoNivel(
+  saldoPontos: number,
+  nivel: NivelFidelidade,
+  limites: Record<NivelFidelidade, number> = TIER_THRESHOLDS
+): ProgressoNivel {
   const indiceAtual = TIER_ORDER.indexOf(nivel);
   const proximoNivel = TIER_ORDER[indiceAtual + 1] ?? null;
 
@@ -15,8 +21,8 @@ export function getProgressoNivel(saldoPontos: number, nivel: NivelFidelidade): 
     return { percentual: 100, proximoNivel: null, pontosRestantes: 0 };
   }
 
-  const limiteAtual = TIER_THRESHOLDS[nivel];
-  const limiteProximo = TIER_THRESHOLDS[proximoNivel];
+  const limiteAtual = limites[nivel];
+  const limiteProximo = limites[proximoNivel];
   const percentual = Math.round(((saldoPontos - limiteAtual) / (limiteProximo - limiteAtual)) * 100);
 
   return {
@@ -26,11 +32,14 @@ export function getProgressoNivel(saldoPontos: number, nivel: NivelFidelidade): 
   };
 }
 
-export function getNivelPorPontos(saldoPontos: number): NivelFidelidade {
+export function getNivelPorPontos(
+  saldoPontos: number,
+  limites: Record<NivelFidelidade, number> = TIER_THRESHOLDS
+): NivelFidelidade {
   let nivelAtingido: NivelFidelidade = TIER_ORDER[0];
 
   for (const nivel of TIER_ORDER) {
-    if (saldoPontos >= TIER_THRESHOLDS[nivel]) {
+    if (saldoPontos >= limites[nivel]) {
       nivelAtingido = nivel;
     }
   }

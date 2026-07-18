@@ -6,3 +6,4 @@ export * from "./navigation";
 export * from "./formState";
 export * from "./resgate";
 export * from "./extrato";
+export * from "./configuracao";

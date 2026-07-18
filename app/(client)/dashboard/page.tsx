@@ -4,6 +4,7 @@ import { SectionTitle } from "@/components/ui";
 import { PointsCard, HistoryCard, QuickActionButton, SemClienteState } from "@/components/shared";
 import { getClienteAtual } from "@/services/clienteService";
 import { getHistoricoDetalhado } from "@/services/historicoService";
+import { getConfiguracao, getLimitesNivel } from "@/services/configuracaoService";
 
 // Dados vêm do Supabase e mudam a cada atendimento/resgate — nunca pré-renderizar estaticamente.
 export const dynamic = "force-dynamic";
@@ -19,12 +20,19 @@ export default async function DashboardPage() {
     );
   }
 
-  const historico = await getHistoricoDetalhado(cliente.id);
+  const [historico, configuracao] = await Promise.all([
+    getHistoricoDetalhado(cliente.id),
+    getConfiguracao(),
+  ]);
   const ultimoServico = historico[0];
 
   return (
     <PageShell title="Dashboard" subtitle={`Olá, ${cliente.nome.split(" ")[0]}`}>
-      <PointsCard saldoPontos={cliente.saldoPontos} nivel={cliente.nivel} />
+      <PointsCard
+        saldoPontos={cliente.saldoPontos}
+        nivel={cliente.nivel}
+        limites={getLimitesNivel(configuracao)}
+      />
 
       {ultimoServico && (
         <div>

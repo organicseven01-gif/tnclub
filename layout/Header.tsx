@@ -1,4 +1,4 @@
-import { Droplets, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 
 interface HeaderProps {
   title: string;
@@ -9,8 +9,9 @@ export function Header({ title, subtitle }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-white/90 px-5 pb-4 pt-6 backdrop-blur">
       <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-dark">
-          <Droplets size={20} className="text-brand-light" strokeWidth={2} />
+        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
         </div>
         <div>
           <h1 className="text-lg font-bold leading-tight text-ink">{title}</h1>
