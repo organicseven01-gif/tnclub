@@ -9,6 +9,7 @@ import {
   Wrench,
   ClipboardPlus,
   Settings,
+  Trophy,
 } from "lucide-react";
 import type { NavItem, NivelFidelidade, StatusCliente } from "@/types";
 
@@ -26,6 +27,7 @@ export const NAV_ITEMS: NavItem[] = [
 export const ADMIN_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Clientes", href: "/admin/clientes", icon: Users },
+  { label: "Ranking", href: "/admin/ranking", icon: Trophy },
   { label: "Serviços", href: "/admin/servicos", icon: Wrench },
   { label: "Pontuação", href: "/admin/pontuacao", icon: ClipboardPlus },
   { label: "Benefícios", href: "/admin/beneficios", icon: Gift },

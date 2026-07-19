@@ -8,3 +8,4 @@ export * from "./extratoService";
 export * from "./configuracaoService";
 export * from "./emailService";
 export * from "./programaPontosService";
+export * from "./rankingService";
