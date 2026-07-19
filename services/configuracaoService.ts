@@ -7,7 +7,6 @@ interface ConfiguracaoRow {
   whatsapp: string;
   limite_prata: number;
   limite_ouro: number;
-  limite_platina: number;
   limite_diamante: number;
   reais_por_ponto?: number;
   pontos_por_real_desconto?: number;
@@ -21,7 +20,6 @@ const CONFIGURACAO_PADRAO: Configuracao = {
   whatsapp: "",
   limitePrata: TIER_THRESHOLDS.prata,
   limiteOuro: TIER_THRESHOLDS.ouro,
-  limitePlatina: TIER_THRESHOLDS.platina,
   limiteDiamante: TIER_THRESHOLDS.diamante,
   reaisPorPonto: 3,
   pontosPorRealDesconto: 3,
@@ -34,7 +32,6 @@ function mapConfiguracao(row: ConfiguracaoRow): Configuracao {
     whatsapp: row.whatsapp ?? "",
     limitePrata: row.limite_prata,
     limiteOuro: row.limite_ouro,
-    limitePlatina: row.limite_platina,
     limiteDiamante: row.limite_diamante,
     reaisPorPonto: row.reais_por_ponto ?? CONFIGURACAO_PADRAO.reaisPorPonto,
     pontosPorRealDesconto:
@@ -65,7 +62,6 @@ export function getLimitesNivel(config: Configuracao): Record<NivelFidelidade, n
     bronze: 0,
     prata: config.limitePrata,
     ouro: config.limiteOuro,
-    platina: config.limitePlatina,
     diamante: config.limiteDiamante,
   };
 }
@@ -77,7 +73,6 @@ export async function salvarConfiguracao(dados: Configuracao): Promise<void> {
     p_whatsapp: dados.whatsapp,
     p_limite_prata: dados.limitePrata,
     p_limite_ouro: dados.limiteOuro,
-    p_limite_platina: dados.limitePlatina,
     p_limite_diamante: dados.limiteDiamante,
     p_reais_por_ponto: dados.reaisPorPonto,
     p_pontos_por_real_desconto: dados.pontosPorRealDesconto,

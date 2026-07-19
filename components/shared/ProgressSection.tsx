@@ -1,7 +1,6 @@
 import { ProgressBar } from "@/components/ui";
 import { cn } from "@/utils/cn";
 import { TIER_LABELS } from "@/utils/constants";
-import { formatPoints } from "@/utils/formatters";
 import type { ProgressoNivel } from "@/utils/tier";
 
 interface ProgressSectionProps {
@@ -27,7 +26,9 @@ export function ProgressSection({ progresso, tone = "dark" }: ProgressSectionPro
       />
       {progresso.proximoNivel && (
         <p className={cn("mt-2 text-xs", isDark ? "text-white/70" : "text-ink/50")}>
-          Faltam {formatPoints(progresso.pontosRestantes)} para o próximo nível
+          {progresso.servicosRestantes === 1
+            ? "Falta 1 serviço para o próximo nível"
+            : `Faltam ${progresso.servicosRestantes} serviços para o próximo nível`}
         </p>
       )}
     </div>

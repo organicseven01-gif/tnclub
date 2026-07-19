@@ -34,7 +34,7 @@ create table if not exists public.clientes (
   constraint clientes_email_key unique (email),
   constraint clientes_cpf_key unique (cpf),
   constraint clientes_saldo_pontos_check check (saldo_pontos >= 0),
-  constraint clientes_nivel_check check (nivel in ('bronze', 'prata', 'ouro', 'platina', 'diamante')),
+  constraint clientes_nivel_check check (nivel in ('bronze', 'prata', 'ouro', 'diamante')),
   constraint clientes_status_check check (status in ('ativo', 'inativo'))
 );
 
@@ -136,10 +136,10 @@ comment on table public.resgates is 'Resgates de benefícios feitos pelos client
 create table if not exists public.configuracoes (
   id                       smallint primary key default 1,
   whatsapp                 text not null default '',
-  limite_prata             integer not null default 500,
-  limite_ouro              integer not null default 1500,
-  limite_platina           integer not null default 3000,
-  limite_diamante          integer not null default 6000,
+  -- Níveis: quantidade mínima de SERVIÇOS realizados para alcançar cada nível.
+  limite_prata             integer not null default 3,
+  limite_ouro              integer not null default 4,
+  limite_diamante          integer not null default 5,
   reais_por_ponto          numeric(10,2) not null default 3.00,
   pontos_por_real_desconto integer not null default 3,
   validade_pontos_ativa    boolean not null default true,
@@ -150,8 +150,7 @@ create table if not exists public.configuracoes (
   constraint configuracoes_ordem_check check (
     limite_prata > 0
     and limite_prata < limite_ouro
-    and limite_ouro < limite_platina
-    and limite_platina < limite_diamante
+    and limite_ouro < limite_diamante
   )
 );
 
@@ -227,7 +226,7 @@ begin
   v_saldo := public.saldo_pontos_disponivel(p_cliente_id);
   update public.clientes
      set saldo_pontos = v_saldo,
-         nivel = public.fn_calcular_nivel(v_saldo)
+         nivel = public.fn_nivel_por_servicos(p_cliente_id)
    where id = p_cliente_id;
 end;
 $$;
@@ -271,22 +270,25 @@ begin
 end;
 $$;
 
--- Calcula o nível de fidelidade a partir do saldo de pontos, usando os limites
--- configurados pelo administrador (tabela public.configuracoes). É "stable"
--- (não "immutable") porque lê de uma tabela.
-create or replace function public.fn_calcular_nivel(p_saldo integer)
+-- Calcula o nível de fidelidade pela QUANTIDADE DE SERVIÇOS realizados pelo
+-- cliente, usando os limites configurados pelo administrador.
+create or replace function public.fn_nivel_por_servicos(p_cliente_id uuid)
 returns text
 language sql
 stable
 as $$
   select case
-    when p_saldo >= c.limite_diamante then 'diamante'
-    when p_saldo >= c.limite_platina  then 'platina'
-    when p_saldo >= c.limite_ouro     then 'ouro'
-    when p_saldo >= c.limite_prata    then 'prata'
+    when t.qtd >= c.limite_diamante then 'diamante'
+    when t.qtd >= c.limite_ouro     then 'ouro'
+    when t.qtd >= c.limite_prata    then 'prata'
     else 'bronze'
   end
   from public.configuracoes c
+  cross join (
+    select count(*)::integer as qtd
+      from public.atendimentos
+     where cliente_id = p_cliente_id
+  ) t
   where c.id = 1;
 $$;
 
@@ -512,7 +514,6 @@ create or replace function public.salvar_configuracao(
   p_whatsapp text,
   p_limite_prata integer,
   p_limite_ouro integer,
-  p_limite_platina integer,
   p_limite_diamante integer,
   p_reais_por_ponto numeric,
   p_pontos_por_real_desconto integer,
@@ -531,7 +532,6 @@ begin
      set whatsapp                 = coalesce(p_whatsapp, ''),
          limite_prata             = p_limite_prata,
          limite_ouro              = p_limite_ouro,
-         limite_platina           = p_limite_platina,
          limite_diamante          = p_limite_diamante,
          reais_por_ponto          = p_reais_por_ponto,
          pontos_por_real_desconto = p_pontos_por_real_desconto,
@@ -544,8 +544,8 @@ begin
   -- Reclassifica os clientes cujo nível muda com os novos limites (o WHERE
   -- também atende à exigência do Supabase de não permitir UPDATE sem cláusula).
   update public.clientes c
-     set nivel = public.fn_calcular_nivel(public.saldo_pontos_disponivel(c.id))
-   where c.nivel is distinct from public.fn_calcular_nivel(public.saldo_pontos_disponivel(c.id));
+     set nivel = public.fn_nivel_por_servicos(c.id)
+   where c.nivel is distinct from public.fn_nivel_por_servicos(c.id);
 
   return v_config;
 end;

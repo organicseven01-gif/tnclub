@@ -4,6 +4,7 @@ import { SectionTitle, EmptyState } from "@/components/ui";
 import { PointsCard, PointsMovementCard, PointsExpiryAlert, SemClienteState } from "@/components/shared";
 import { getClienteAtual } from "@/services/clienteService";
 import { listarExtratoPontos } from "@/services/extratoService";
+import { contarServicosCliente } from "@/services/historicoService";
 import { getConfiguracao, getLimitesNivel } from "@/services/configuracaoService";
 import { getResumoValidadePontos } from "@/services/programaPontosService";
 import { formatDateShort } from "@/utils/formatters";
@@ -21,10 +22,11 @@ export default async function MeusPontosPage() {
     );
   }
 
-  const [extrato, configuracao, resumoValidade] = await Promise.all([
+  const [extrato, configuracao, resumoValidade, servicosRealizados] = await Promise.all([
     listarExtratoPontos(cliente.id),
     getConfiguracao(),
     getResumoValidadePontos(cliente.id),
+    contarServicosCliente(cliente.id),
   ]);
 
   return (
@@ -32,6 +34,7 @@ export default async function MeusPontosPage() {
       <PointsCard
         saldoPontos={cliente.saldoPontos}
         nivel={cliente.nivel}
+        servicosRealizados={servicosRealizados}
         limites={getLimitesNivel(configuracao)}
       />
 

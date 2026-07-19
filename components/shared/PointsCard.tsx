@@ -9,11 +9,13 @@ import type { NivelFidelidade } from "@/types";
 interface PointsCardProps {
   saldoPontos: number;
   nivel: NivelFidelidade;
+  servicosRealizados: number;
   limites?: Record<NivelFidelidade, number>;
 }
 
-export function PointsCard({ saldoPontos, nivel, limites }: PointsCardProps) {
-  const progresso = getProgressoNivel(saldoPontos, nivel, limites);
+export function PointsCard({ saldoPontos, nivel, servicosRealizados, limites }: PointsCardProps) {
+  // O nível (e o progresso) dependem da quantidade de serviços realizados.
+  const progresso = getProgressoNivel(servicosRealizados, nivel, limites);
 
   return (
     <Card padding="lg" className="bg-brand-dark text-white shadow-soft">

@@ -58,6 +58,21 @@ export async function getHistoricoDetalhado(clienteId: string): Promise<Historic
   return listarHistoricoDetalhado({ clienteId });
 }
 
+// Quantidade de serviços realizados pelo cliente — é o que define o nível.
+export async function contarServicosCliente(clienteId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("atendimentos")
+    .select("*", { count: "exact", head: true })
+    .eq("cliente_id", clienteId);
+
+  if (error) {
+    console.error(error);
+    return 0;
+  }
+
+  return count ?? 0;
+}
+
 export interface FiltroHistorico {
   clienteId?: string;
   servicoId?: string;

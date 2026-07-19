@@ -11,7 +11,6 @@ export async function salvarConfiguracaoAction(
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
   const limitePrata = Number(formData.get("limitePrata") ?? 0);
   const limiteOuro = Number(formData.get("limiteOuro") ?? 0);
-  const limitePlatina = Number(formData.get("limitePlatina") ?? 0);
   const limiteDiamante = Number(formData.get("limiteDiamante") ?? 0);
 
   const reaisPorPonto = Number(formData.get("reaisPorPonto") ?? 0);
@@ -19,18 +18,16 @@ export async function salvarConfiguracaoAction(
   const validadePontosAtiva = formData.get("validadePontosAtiva") === "true";
   const validadePontosDias = Number(formData.get("validadePontosDias") ?? 0);
 
-  const limites = [limitePrata, limiteOuro, limitePlatina, limiteDiamante];
+  const limites = [limitePrata, limiteOuro, limiteDiamante];
 
-  if (limites.some((valor) => !Number.isFinite(valor) || valor <= 0)) {
-    return { error: "Os pontos de cada nível devem ser números maiores que zero." };
+  if (limites.some((valor) => !Number.isInteger(valor) || valor <= 0)) {
+    return { error: "A quantidade de serviços de cada nível deve ser um número inteiro maior que zero." };
   }
 
-  // Cada nível precisa exigir mais pontos que o anterior.
-  if (
-    !(limitePrata < limiteOuro && limiteOuro < limitePlatina && limitePlatina < limiteDiamante)
-  ) {
+  // Cada nível precisa exigir mais serviços que o anterior.
+  if (!(limitePrata < limiteOuro && limiteOuro < limiteDiamante)) {
     return {
-      error: "Os níveis devem estar em ordem crescente: Prata < Ouro < Platina < Diamante.",
+      error: "Os níveis devem estar em ordem crescente: Prata < Ouro < Diamante.",
     };
   }
 
@@ -51,7 +48,6 @@ export async function salvarConfiguracaoAction(
       whatsapp,
       limitePrata,
       limiteOuro,
-      limitePlatina,
       limiteDiamante,
       reaisPorPonto,
       pontosPorRealDesconto,

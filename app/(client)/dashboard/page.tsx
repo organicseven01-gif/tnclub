@@ -33,6 +33,7 @@ export default async function DashboardPage() {
       <PointsCard
         saldoPontos={cliente.saldoPontos}
         nivel={cliente.nivel}
+        servicosRealizados={historico.length}
         limites={getLimitesNivel(configuracao)}
       />
 

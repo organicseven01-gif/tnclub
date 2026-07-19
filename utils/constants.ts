@@ -39,19 +39,18 @@ export const TIER_LABELS: Record<NivelFidelidade, string> = {
   bronze: "Bronze",
   prata: "Prata",
   ouro: "Ouro",
-  platina: "Platina",
   diamante: "Diamante",
 };
 
-export const TIER_ORDER: NivelFidelidade[] = ["bronze", "prata", "ouro", "platina", "diamante"];
+export const TIER_ORDER: NivelFidelidade[] = ["bronze", "prata", "ouro", "diamante"];
 
-// Único ponto de configuração dos limites de pontos de cada nível.
+// Quantidade mínima de SERVIÇOS realizados para alcançar cada nível.
+// Padrão: 1-2 serviços Bronze, 3 Prata, 4 Ouro, 5 ou mais Diamante.
 export const TIER_THRESHOLDS: Record<NivelFidelidade, number> = {
   bronze: 0,
-  prata: 500,
-  ouro: 1500,
-  platina: 3000,
-  diamante: 6000,
+  prata: 3,
+  ouro: 4,
+  diamante: 5,
 };
 
 export const STATUS_CLIENTE_LABELS: Record<StatusCliente, string> = {

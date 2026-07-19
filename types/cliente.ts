@@ -1,4 +1,4 @@
-export type NivelFidelidade = "bronze" | "prata" | "ouro" | "platina" | "diamante";
+export type NivelFidelidade = "bronze" | "prata" | "ouro" | "diamante";
 
 export type StatusCliente = "ativo" | "inativo";
 
