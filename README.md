@@ -2,12 +2,22 @@
 
 App mobile-first (Next.js App Router + TypeScript + Tailwind) para o clube de fidelidade da TN Clean, com painel administrativo completo, conectado ao **Supabase** (PostgreSQL real).
 
-Esta é a **sétima etapa**: existe uma landing de acesso em `/`, um login de cliente por CPF/telefone (`/cliente/login`) e um login administrativo real via **Supabase Auth** (`/admin/login`), que protege todo o painel (`/admin/*`) por middleware.
+Inclui um **Programa de Pontos** completo: acúmulo automático pelo valor do serviço, uso de pontos como desconto em vendas, validade por lote (FIFO) e alertas de vencimento — tudo configurável pelo administrador.
+
+Acesso: landing em `/`, login de cliente por CPF/telefone e login administrativo real via **Supabase Auth** (`/admin/login`), que protege todo o painel (`/admin/*`) por middleware.
+
+## Programa de Pontos
+
+- **Acúmulo automático**: os pontos são calculados pelo valor do serviço (`reais_por_ponto`). O serviço tem só o valor de venda — não se cadastra pontos por serviço.
+- **Desconto em vendas**: na tela de Pontuação, o cliente pode usar pontos como desconto (`pontos_por_real_desconto`), pagando o restante em dinheiro/Pix/cartão.
+- **Validade por lote (FIFO)**: cada acúmulo vira um lote com data de vencimento (padrão 12 meses, configurável e desligável). Ao usar pontos, consome-se primeiro os de vencimento mais próximo. Pontos vencidos saem do saldo automaticamente e ficam no histórico.
+- **Cliente**: vê saldo válido, pontos que vencem em breve, próximo vencimento e alertas.
+- **Regras** ajustáveis em **Configurações → Programa de pontos**.
 
 ## Como configurar o Supabase
 
 1. Crie um projeto gratuito em [supabase.com](https://supabase.com) (New Project).
-2. No projeto, abra **SQL Editor** e rode o conteúdo de `supabase/schema.sql` (tabelas, índices, RLS, funções transacionais). `supabase/seed.sql` é opcional e está intencionalmente vazio — cadastre seus primeiros dados pelo próprio painel administrativo.
+2. No projeto, abra **SQL Editor** e rode o conteúdo de `supabase/schema.sql` (tabelas, índices, RLS, funções transacionais). Isso já inclui o Programa de Pontos. `supabase/seed.sql` é opcional e está intencionalmente vazio — cadastre seus primeiros dados pelo próprio painel administrativo. Os arquivos `supabase/migracao-*.sql` são migrações incrementais (úteis apenas para bancos criados antes dessas etapas).
 3. Em **Project Settings > API**, copie a **Project URL** e a chave **anon/public** (nunca a `service_role`) para `.env.local` (copie de `.env.local.example`):
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://SEU-PROJETO.supabase.co

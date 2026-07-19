@@ -31,18 +31,3 @@ export function getProgressoNivel(
     pontosRestantes: Math.max(0, limiteProximo - saldoPontos),
   };
 }
-
-export function getNivelPorPontos(
-  saldoPontos: number,
-  limites: Record<NivelFidelidade, number> = TIER_THRESHOLDS
-): NivelFidelidade {
-  let nivelAtingido: NivelFidelidade = TIER_ORDER[0];
-
-  for (const nivel of TIER_ORDER) {
-    if (saldoPontos >= limites[nivel]) {
-      nivelAtingido = nivel;
-    }
-  }
-
-  return nivelAtingido;
-}
