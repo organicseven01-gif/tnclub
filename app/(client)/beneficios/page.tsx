@@ -44,8 +44,10 @@ export default async function BeneficiosPage() {
             <RewardCard
               key={beneficio.id}
               beneficio={beneficio}
+              clienteNome={cliente.nome}
               saldoCliente={cliente.saldoPontos}
               pontosPorRealDesconto={configuracao.pontosPorRealDesconto}
+              whatsapp={configuracao.whatsapp}
               action={resgatarBeneficioAction}
             />
           ))}
