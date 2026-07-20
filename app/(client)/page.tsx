@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { Sparkles, Star, Gift, TrendingUp, Info } from "lucide-react";
 import { Card, MaskedInput, Button } from "@/components/ui";
-import { maskCpfOuTelefone } from "@/utils/formatters";
+import { maskCpf } from "@/utils/formatters";
 import { initialFormState } from "@/types";
 import { entrarComoClienteAction } from "./actions";
 
@@ -79,7 +79,7 @@ export default function LandingPage() {
               </div>
             )}
 
-            <MaskedInput name="termo" mask={maskCpfOuTelefone} placeholder="Digite seu CPF ou telefone" required />
+            <MaskedInput name="termo" mask={maskCpf} placeholder="Digite seu CPF" required />
 
             <Button type="submit" size="lg" disabled={pending}>
               {pending ? "Entrando..." : "Entrar no TN Club"}

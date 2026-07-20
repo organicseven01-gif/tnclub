@@ -45,12 +45,3 @@ export function maskTelefone(value: string): string {
   if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 }
-
-// Campo combinado (tela de login): CPF e celular têm 11 dígitos, então
-// tratamos 11 dígitos como telefone só quando o dígito após o DDD é 9
-// (padrão do celular brasileiro); caso contrário, formatamos como CPF.
-export function maskCpfOuTelefone(value: string): string {
-  const d = value.replace(/\D/g, "").slice(0, 11);
-  const pareceTelefone = d.length <= 10 || (d.length === 11 && d[2] === "9");
-  return pareceTelefone ? maskTelefone(value) : maskCpf(value);
-}
