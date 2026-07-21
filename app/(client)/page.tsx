@@ -1,12 +1,11 @@
-"use client";
-
-import { useActionState } from "react";
 import Link from "next/link";
-import { Sparkles, Star, Gift, TrendingUp, Info } from "lucide-react";
-import { Card, MaskedInput, Button } from "@/components/ui";
-import { maskCpf } from "@/utils/formatters";
-import { initialFormState } from "@/types";
-import { entrarComoClienteAction } from "./actions";
+import { Sparkles, Star, Gift, TrendingUp } from "lucide-react";
+import { getConfiguracao } from "@/services/configuracaoService";
+import { LoginCard } from "./LoginCard";
+
+// Lê o WhatsApp das configurações a cada acesso (usado no aviso de cadastro
+// não encontrado), então a página não pode ser pré-renderizada estaticamente.
+export const dynamic = "force-dynamic";
 
 const beneficios = [
   {
@@ -26,8 +25,8 @@ const beneficios = [
   },
 ];
 
-export default function LandingPage() {
-  const [state, formAction, pending] = useActionState(entrarComoClienteAction, initialFormState);
+export default async function LandingPage() {
+  const { whatsapp } = await getConfiguracao();
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-white px-6 py-12">
@@ -53,44 +52,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <Card
-          padding="lg"
-          className="animate-fade-in-up mt-8 shadow-soft"
-          style={{ animationDelay: "120ms" }}
-        >
-          <h2 className="text-lg font-bold text-ink">Acesse sua conta</h2>
-          <p className="mt-1 text-sm text-ink/55">
-            Consulte seus pontos, acompanhe seu histórico e descubra seus benefícios.
-          </p>
+        <LoginCard whatsapp={whatsapp} />
 
-          <form action={formAction} className="mt-6 space-y-4">
-            {state.error && (
-              <div className="flex items-start gap-3 rounded-2xl bg-surface px-4 py-3.5 text-left">
-                <Info size={17} className="mt-0.5 shrink-0 text-brand-dark" strokeWidth={1.75} />
-                <div>
-                  <p className="text-sm font-semibold text-ink">{state.error}</p>
-                  {state.error === "Não encontramos seu cadastro." && (
-                    <p className="mt-1 text-xs leading-relaxed text-ink/50">
-                      Entre em contato com a TN Clean para ativar sua participação no Clube de
-                      Benefícios.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <MaskedInput name="termo" mask={maskCpf} placeholder="Digite seu CPF" required />
-
-            <Button type="submit" size="lg" disabled={pending}>
-              {pending ? "Entrando..." : "Entrar no TN Club"}
-            </Button>
-          </form>
-        </Card>
-
-        <div
-          className="animate-fade-in-up mt-8 space-y-3"
-          style={{ animationDelay: "220ms" }}
-        >
+        <div className="animate-fade-in-up mt-8 space-y-3" style={{ animationDelay: "220ms" }}>
           {beneficios.map((item) => (
             <div
               key={item.titulo}
