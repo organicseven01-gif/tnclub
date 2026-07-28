@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { CheckCircle2, Gift, MessageCircle } from "lucide-react";
 import { Card, Button, Alert } from "@/components/ui";
 import { formatCurrency, formatPoints } from "@/utils/formatters";
@@ -60,6 +60,16 @@ export function RewardCard({
     ].join("\n")
   );
 
+  // Após confirmar o resgate, direciona o cliente ao WhatsApp da empresa.
+  useEffect(() => {
+    if (state.success && linkResgatado) {
+      const t = setTimeout(() => {
+        window.location.href = linkResgatado;
+      }, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [state.success, linkResgatado]);
+
   return (
     <Card padding="md" className="flex flex-col">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10">
@@ -75,7 +85,7 @@ export function RewardCard({
 
       {suficiente ? (
         <Button type="button" size="md" className="mt-3" onClick={() => setAberto(true)}>
-          Resgatar
+          Quero resgatar
         </Button>
       ) : (
         <>
@@ -118,7 +128,9 @@ export function RewardCard({
                 </div>
                 <h3 className="mt-4 text-lg font-bold text-ink">Resgate confirmado!</h3>
                 <p className="mt-1 text-sm text-ink/60">
-                  Agora fale com a TN Clean pelo WhatsApp para combinar a retirada do seu benefício.
+                  {linkResgatado
+                    ? "Abrindo o WhatsApp da TN Clean para você combinar a retirada..."
+                    : "Fale com a TN Clean para combinar a retirada do seu benefício."}
                 </p>
 
                 {linkResgatado && (
@@ -129,8 +141,14 @@ export function RewardCard({
                     className="mt-5 flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#25D366] text-sm font-semibold text-white transition-opacity hover:opacity-90"
                   >
                     <MessageCircle size={17} strokeWidth={2} />
-                    Falar com a TN Clean
+                    Abrir o WhatsApp
                   </a>
+                )}
+
+                {linkResgatado && (
+                  <p className="mt-2 text-[11px] text-ink/40">
+                    Se não abrir sozinho, toque no botão acima.
+                  </p>
                 )}
 
                 <button
