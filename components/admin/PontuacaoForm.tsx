@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Coins } from "lucide-react";
+import { Plus, Trash2, Coins, CheckCircle2, MessageCircle, Mail } from "lucide-react";
 import { Button, Card, Input, Select, Textarea, Alert } from "@/components/ui";
 import { formatCurrency, formatPoints } from "@/utils/formatters";
 import {
@@ -10,8 +10,21 @@ import {
   descontoMaximoReais,
   pontosParaDesconto,
 } from "@/utils/pontosPrograma";
+import { linkWhatsApp } from "@/utils/whatsapp";
+import { textoPontuacao } from "@/utils/mensagemPontuacao";
 import { initialFormState } from "@/types";
 import type { Cliente, Servico, FormState } from "@/types";
+import type { DadosEmailPontuacao } from "@/app/admin/(painel)/pontuacao/actions";
+
+interface ResumoModal {
+  nome: string;
+  email: string;
+  telefone: string;
+  pontosGerados: number;
+  descontoReais: number;
+  valorTotal: number;
+  valorPagar: number;
+}
 
 interface PontuacaoFormProps {
   clientes: Cliente[];
@@ -19,6 +32,7 @@ interface PontuacaoFormProps {
   reaisPorPonto: number;
   pontosPorRealDesconto: number;
   action: (prevState: FormState, formData: FormData) => Promise<FormState>;
+  emailAction: (dados: DadosEmailPontuacao) => Promise<{ ok: boolean; erro?: string }>;
 }
 
 interface ItemAtendimento {
@@ -39,13 +53,52 @@ export function PontuacaoForm({
   reaisPorPonto,
   pontosPorRealDesconto,
   action,
+  emailAction,
 }: PontuacaoFormProps) {
   const router = useRouter();
+  const [resumoModal, setResumoModal] = useState<ResumoModal | null>(null);
+  const [emailStatus, setEmailStatus] = useState<"idle" | "enviando" | "ok" | "erro">("idle");
+  const [emailErro, setEmailErro] = useState("");
+
   const [state, formAction, pending] = useActionState(async (prevState: FormState, formData: FormData) => {
     const resultado = await action(prevState, formData);
-    if (!resultado.error) router.refresh();
+    if (!resultado.error) {
+      // Snapshot do que foi registrado, para o modal e os botões de envio.
+      const cliente = clientes.find((c) => c.id === clienteId);
+      setResumoModal({
+        nome: cliente?.nome ?? "",
+        email: cliente?.email ?? "",
+        telefone: cliente?.telefone ?? "",
+        pontosGerados,
+        descontoReais: descontoAplicado,
+        valorTotal,
+        valorPagar,
+      });
+      setEmailStatus("idle");
+      setEmailErro("");
+      router.refresh();
+    }
     return resultado;
   }, initialFormState);
+
+  async function enviarEmail() {
+    if (!resumoModal?.email) return;
+    setEmailStatus("enviando");
+    const r = await emailAction({
+      email: resumoModal.email,
+      nome: resumoModal.nome,
+      pontosGerados: resumoModal.pontosGerados,
+      descontoReais: resumoModal.descontoReais,
+      valorTotal: resumoModal.valorTotal,
+      valorPagar: resumoModal.valorPagar,
+    });
+    if (r.ok) {
+      setEmailStatus("ok");
+    } else {
+      setEmailStatus("erro");
+      setEmailErro(r.erro ?? "Não foi possível enviar o e-mail.");
+    }
+  }
 
   const [clienteId, setClienteId] = useState("");
   const [itens, setItens] = useState<ItemAtendimento[]>([criarItem(servicos[0]?.id ?? "")]);
@@ -99,8 +152,13 @@ export function PontuacaoForm({
 
   const itensValidos = itens.some((item) => item.servicoId && item.quantidade > 0);
 
+  const linkZapCliente = resumoModal
+    ? linkWhatsApp(resumoModal.telefone, textoPontuacao(resumoModal))
+    : null;
+
   return (
-    <form action={formAction} className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+    <>
+      <form action={formAction} className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-start">
       <input
         type="hidden"
         name="itens"
@@ -110,12 +168,6 @@ export function PontuacaoForm({
 
       <Card padding="lg" className="space-y-5">
         {state.error && <Alert variant="error">{state.error}</Alert>}
-        {state.success && (
-          <Alert variant="success">
-            Atendimento registrado com sucesso!
-            {state.info ? <span className="mt-1 block text-xs font-normal">{state.info}</span> : null}
-          </Alert>
-        )}
 
         <Select
           label="Cliente"
@@ -274,6 +326,72 @@ export function PontuacaoForm({
           <p className="mt-1 text-lg font-bold text-brand-light">+ {formatPoints(pontosGerados)}</p>
         </div>
       </Card>
-    </form>
+      </form>
+
+      {/* Modal: confirma o registro e envia o resumo ao cliente */}
+      {resumoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-light/15">
+              <CheckCircle2 size={28} className="text-brand-dark" strokeWidth={2} />
+            </div>
+            <h3 className="mt-4 text-lg font-bold text-ink">Atendimento registrado!</h3>
+            <p className="mt-1 text-sm text-ink/60">
+              <strong className="text-ink">{resumoModal.nome}</strong> ganhou{" "}
+              <strong className="text-brand-dark">{formatPoints(resumoModal.pontosGerados)}</strong>.
+              {resumoModal.descontoReais > 0
+                ? ` Valor a pagar: ${formatCurrency(resumoModal.valorPagar)}.`
+                : null}
+            </p>
+
+            <p className="mt-4 text-xs font-medium text-ink/50">Enviar o resumo ao cliente:</p>
+
+            <div className="mt-2 space-y-2">
+              {linkZapCliente ? (
+                <a
+                  href={linkZapCliente}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#25D366] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  <MessageCircle size={17} strokeWidth={2} />
+                  Enviar por WhatsApp
+                </a>
+              ) : (
+                <p className="text-xs text-ink/40">Cliente sem telefone para WhatsApp.</p>
+              )}
+
+              {resumoModal.email ? (
+                <button
+                  type="button"
+                  onClick={enviarEmail}
+                  disabled={emailStatus === "enviando" || emailStatus === "ok"}
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-brand text-sm font-semibold text-brand transition-colors hover:bg-brand/5 disabled:opacity-60"
+                >
+                  <Mail size={17} strokeWidth={2} />
+                  {emailStatus === "enviando"
+                    ? "Enviando..."
+                    : emailStatus === "ok"
+                      ? "E-mail enviado ✓"
+                      : "Enviar por e-mail"}
+                </button>
+              ) : (
+                <p className="text-xs text-ink/40">Cliente sem e-mail cadastrado.</p>
+              )}
+
+              {emailStatus === "erro" && <p className="text-xs text-red-500">{emailErro}</p>}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setResumoModal(null)}
+              className="mt-4 w-full text-sm font-medium text-ink/50"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

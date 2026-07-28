@@ -2,7 +2,7 @@ import { PageHeader, PontuacaoForm } from "@/components/admin";
 import { getClientes } from "@/services/clienteService";
 import { getServicos } from "@/services/servicoService";
 import { getConfiguracao } from "@/services/configuracaoService";
-import { registrarAtendimentoAction } from "./actions";
+import { registrarAtendimentoAction, enviarPontuacaoEmailAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,7 @@ export default async function PontuacaoPage() {
         reaisPorPonto={configuracao.reaisPorPonto}
         pontosPorRealDesconto={configuracao.pontosPorRealDesconto}
         action={registrarAtendimentoAction}
+        emailAction={enviarPontuacaoEmailAction}
       />
     </div>
   );

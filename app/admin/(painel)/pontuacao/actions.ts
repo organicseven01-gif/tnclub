@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { registrarVenda, type ItemAtendimento } from "@/services/pontuacaoService";
+import { enviarEmailPontuacao } from "@/services/emailService";
 import { formatCurrency, formatPoints } from "@/utils/formatters";
 import type { FormState } from "@/types";
 
@@ -64,4 +65,37 @@ export async function registrarAtendimentoAction(
       : `Valor: ${formatCurrency(resumo.valorTotal)} · +${formatPoints(resumo.pontosGerados)} gerados`;
 
   return { success: true, info };
+}
+
+export interface DadosEmailPontuacao {
+  email: string;
+  nome: string;
+  pontosGerados: number;
+  descontoReais: number;
+  valorTotal: number;
+  valorPagar: number;
+}
+
+// Envia ao cliente o resumo da pontuação por e-mail (acionado pelo botão no
+// modal de confirmação, após o atendimento ser registrado).
+export async function enviarPontuacaoEmailAction(
+  dados: DadosEmailPontuacao
+): Promise<{ ok: boolean; erro?: string }> {
+  if (!dados.email) {
+    return { ok: false, erro: "Este cliente não tem e-mail cadastrado." };
+  }
+
+  const enviado = await enviarEmailPontuacao(dados.email, {
+    nome: dados.nome,
+    pontosGerados: dados.pontosGerados,
+    descontoReais: dados.descontoReais,
+    valorTotal: dados.valorTotal,
+    valorPagar: dados.valorPagar,
+  });
+
+  if (!enviado) {
+    return { ok: false, erro: "Não foi possível enviar o e-mail agora. Tente novamente." };
+  }
+
+  return { ok: true };
 }
