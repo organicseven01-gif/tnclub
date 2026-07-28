@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { CheckCircle2, Gift, MessageCircle } from "lucide-react";
 import { Card, Button, Alert } from "@/components/ui";
 import { formatCurrency, formatPoints } from "@/utils/formatters";
@@ -17,21 +17,6 @@ interface RewardCardProps {
   action: (prevState: FormState, formData: FormData) => Promise<FormState>;
 }
 
-// Botão verde que abre o WhatsApp da TN Clean com o resumo pronto.
-function BotaoAtendente({ link, texto }: { link: string; texto: string }) {
-  return (
-    <a
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-3 flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
-    >
-      <MessageCircle size={15} strokeWidth={2} />
-      {texto}
-    </a>
-  );
-}
-
 export function RewardCard({
   beneficio,
   clienteNome,
@@ -41,13 +26,13 @@ export function RewardCard({
   action,
 }: RewardCardProps) {
   const [state, formAction, pending] = useActionState(action, initialFormState);
+  const [aberto, setAberto] = useState(false);
 
   const suficiente = saldoCliente >= beneficio.pontosNecessarios;
   const faltamPontos = Math.max(0, beneficio.pontosNecessarios - saldoCliente);
   const faltamReais =
     pontosPorRealDesconto > 0 ? Math.ceil(faltamPontos / pontosPorRealDesconto) : 0;
 
-  // Resumo enviado ao atendente após o resgate ser registrado.
   const linkResgatado = linkWhatsApp(
     whatsapp,
     [
@@ -61,7 +46,6 @@ export function RewardCard({
     ].join("\n")
   );
 
-  // Resumo para quem ainda não tem pontos suficientes (combinar o complemento).
   const linkFaltando = linkWhatsApp(
     whatsapp,
     [
@@ -89,32 +73,10 @@ export function RewardCard({
         {formatPoints(beneficio.pontosNecessarios)}
       </p>
 
-      {state.success ? (
-        <>
-          <div className="mt-3 flex items-center justify-center gap-2 rounded-2xl bg-brand-light/15 py-3 text-sm font-semibold text-brand-dark">
-            <CheckCircle2 size={16} />
-            Resgate confirmado!
-          </div>
-          {linkResgatado ? (
-            <BotaoAtendente link={linkResgatado} texto="Avisar atendente" />
-          ) : (
-            <p className="mt-3 text-center text-xs text-ink/50">
-              Fale com a TN Clean para combinar a retirada.
-            </p>
-          )}
-        </>
-      ) : suficiente ? (
-        <form action={formAction} className="mt-3">
-          <input type="hidden" name="beneficioId" value={beneficio.id} />
-          {state.error && (
-            <Alert variant="error" className="mb-3">
-              {state.error}
-            </Alert>
-          )}
-          <Button type="submit" size="md" disabled={pending}>
-            {pending ? "Resgatando..." : "Resgatar"}
-          </Button>
-        </form>
+      {suficiente ? (
+        <Button type="button" size="md" className="mt-3" onClick={() => setAberto(true)}>
+          Resgatar
+        </Button>
       ) : (
         <>
           <div className="mt-3 rounded-2xl bg-surface px-3 py-3">
@@ -125,8 +87,96 @@ export function RewardCard({
               atendimento para resgatar.
             </p>
           </div>
-          {linkFaltando && <BotaoAtendente link={linkFaltando} texto="Falar com atendente" />}
+          {linkFaltando && (
+            <a
+              href={linkFaltando}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+            >
+              <MessageCircle size={15} strokeWidth={2} />
+              Falar com atendente
+            </a>
+          )}
         </>
+      )}
+
+      {/* Modal: confirmação do resgate → depois, contato com a empresa */}
+      {aberto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6"
+          onClick={() => !pending && setAberto(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {state.success ? (
+              <>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-light/15">
+                  <CheckCircle2 size={28} className="text-brand-dark" strokeWidth={2} />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-ink">Resgate confirmado!</h3>
+                <p className="mt-1 text-sm text-ink/60">
+                  Agora fale com a TN Clean pelo WhatsApp para combinar a retirada do seu benefício.
+                </p>
+
+                {linkResgatado && (
+                  <a
+                    href={linkResgatado}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#25D366] text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  >
+                    <MessageCircle size={17} strokeWidth={2} />
+                    Falar com a TN Clean
+                  </a>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setAberto(false)}
+                  className="mt-3 w-full text-sm font-medium text-ink/50"
+                >
+                  Fechar
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand/10">
+                  <Gift size={26} className="text-brand" strokeWidth={1.75} />
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-ink">Confirmar resgate</h3>
+                <p className="mt-1 text-sm text-ink/60">
+                  Você quer resgatar <strong className="text-ink">{beneficio.nome}</strong>? Serão
+                  usados <strong className="text-ink">{formatPoints(beneficio.pontosNecessarios)}</strong>{" "}
+                  do seu saldo.
+                </p>
+
+                {state.error && (
+                  <Alert variant="error" className="mt-3 text-left">
+                    {state.error}
+                  </Alert>
+                )}
+
+                <form action={formAction} className="mt-5">
+                  <input type="hidden" name="beneficioId" value={beneficio.id} />
+                  <Button type="submit" size="md" disabled={pending}>
+                    {pending ? "Resgatando..." : "Sim, resgatar"}
+                  </Button>
+                </form>
+                <button
+                  type="button"
+                  onClick={() => setAberto(false)}
+                  disabled={pending}
+                  className="mt-3 w-full text-sm font-medium text-ink/50 disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </Card>
   );
