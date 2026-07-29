@@ -121,7 +121,7 @@ create table if not exists public.resgates (
   status             text not null default 'concluido',
   created_at         timestamptz not null default now(),
 
-  constraint resgates_pontos_utilizados_check check (pontos_utilizados > 0),
+  constraint resgates_pontos_utilizados_check check (pontos_utilizados >= 0),
   constraint resgates_status_check check (status in ('concluido', 'cancelado'))
 );
 
@@ -359,21 +359,27 @@ begin
 end;
 $$;
 
--- Resgata um benefício: verifica saldo, desconta pontos, atualiza nível e
--- grava o resgate — tudo em uma única transação com trava de linha
--- (FOR UPDATE) para evitar condição de corrida em resgates simultâneos.
+-- Resgata um benefício. O cliente pode resgatar mesmo sem o saldo cheio: usa
+-- todos os pontos que tiver (até o custo do benefício) e a diferença é paga em
+-- dinheiro no atendimento. Retorna quantos pontos foram usados e a diferença
+-- em reais. Tudo em uma única transação.
+drop function if exists public.resgatar_beneficio(uuid, uuid);
 create or replace function public.resgatar_beneficio(
   p_cliente_id uuid,
   p_beneficio_id uuid
 )
-returns public.resgates
+returns jsonb
 language plpgsql
 security definer
 set search_path = public
 as $$
 declare
-  v_beneficio    public.beneficios%rowtype;
-  v_novo_resgate public.resgates%rowtype;
+  v_beneficio        public.beneficios%rowtype;
+  v_config           public.configuracoes%rowtype;
+  v_disponivel       integer;
+  v_usar             integer;
+  v_diferenca_pontos integer;
+  v_diferenca_reais  integer;
 begin
   if not exists (select 1 from public.clientes where id = p_cliente_id) then
     raise exception 'Cliente não encontrado.';
@@ -384,18 +390,25 @@ begin
     raise exception 'Este benefício não está mais disponível.';
   end if;
 
-  if public.saldo_pontos_disponivel(p_cliente_id) < v_beneficio.pontos_necessarios then
-    raise exception 'Saldo insuficiente para resgatar este benefício.';
+  select * into v_config from public.configuracoes where id = 1;
+
+  v_disponivel := public.saldo_pontos_disponivel(p_cliente_id);
+  v_usar := least(v_disponivel, v_beneficio.pontos_necessarios);
+  v_diferenca_pontos := v_beneficio.pontos_necessarios - v_usar;
+  v_diferenca_reais := ceil(v_diferenca_pontos::numeric / nullif(v_config.pontos_por_real_desconto, 0))::integer;
+  if v_diferenca_reais is null then
+    v_diferenca_reais := 0;
   end if;
 
   insert into public.resgates (cliente_id, beneficio_id, pontos_utilizados, status)
-  values (p_cliente_id, p_beneficio_id, v_beneficio.pontos_necessarios, 'concluido')
-  returning * into v_novo_resgate;
+  values (p_cliente_id, p_beneficio_id, v_usar, 'concluido');
 
-  perform public.consumir_pontos_fifo(p_cliente_id, v_beneficio.pontos_necessarios);
+  if v_usar > 0 then
+    perform public.consumir_pontos_fifo(p_cliente_id, v_usar);
+  end if;
   perform public.atualizar_saldo_cliente(p_cliente_id);
 
-  return v_novo_resgate;
+  return jsonb_build_object('pontos_utilizados', v_usar, 'diferenca_reais', v_diferenca_reais);
 end;
 $$;
 

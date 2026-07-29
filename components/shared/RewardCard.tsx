@@ -29,35 +29,36 @@ export function RewardCard({
   const [aberto, setAberto] = useState(false);
 
   const suficiente = saldoCliente >= beneficio.pontosNecessarios;
+  // Pontos que serão usados neste resgate (todos, se não bastar para o custo).
+  const pontosUsados = Math.min(saldoCliente, beneficio.pontosNecessarios);
   const faltamPontos = Math.max(0, beneficio.pontosNecessarios - saldoCliente);
-  const faltamReais =
+  const diferencaReais =
     pontosPorRealDesconto > 0 ? Math.ceil(faltamPontos / pontosPorRealDesconto) : 0;
 
+  // Mensagem enviada ao WhatsApp da empresa após confirmar o resgate.
   const linkResgatado = linkWhatsApp(
     whatsapp,
-    [
-      `Olá! Acabei de resgatar um benefício no TN Club.`,
-      ``,
-      `Cliente: ${clienteNome}`,
-      `Benefício: ${beneficio.nome}`,
-      `Pontos utilizados: ${beneficio.pontosNecessarios}`,
-      ``,
-      `Podemos combinar como fica o restante?`,
-    ].join("\n")
-  );
-
-  const linkFaltando = linkWhatsApp(
-    whatsapp,
-    [
-      `Olá! Quero resgatar um benefício no TN Club.`,
-      ``,
-      `Cliente: ${clienteNome}`,
-      `Benefício: ${beneficio.nome} (${beneficio.pontosNecessarios} pontos)`,
-      `Tenho: ${saldoCliente} pontos`,
-      `Faltam: ${faltamPontos} pontos (${formatCurrency(faltamReais)})`,
-      ``,
-      `Podemos combinar?`,
-    ].join("\n")
+    (suficiente
+      ? [
+          `Olá! Acabei de resgatar um benefício no TN Club.`,
+          ``,
+          `Cliente: ${clienteNome}`,
+          `Benefício: ${beneficio.nome}`,
+          `Pontos utilizados: ${pontosUsados}`,
+          ``,
+          `Podemos combinar a retirada?`,
+        ]
+      : [
+          `Olá! Acabei de resgatar um benefício no TN Club.`,
+          ``,
+          `Cliente: ${clienteNome}`,
+          `Benefício: ${beneficio.nome} (${beneficio.pontosNecessarios} pontos)`,
+          `Usei meus ${pontosUsados} pontos.`,
+          `Falta pagar: ${formatCurrency(diferencaReais)}`,
+          ``,
+          `Podemos combinar o restante?`,
+        ]
+    ).join("\n")
   );
 
   // Após confirmar o resgate, direciona o cliente ao WhatsApp da empresa.
@@ -83,35 +84,23 @@ export function RewardCard({
         {formatPoints(beneficio.pontosNecessarios)}
       </p>
 
-      {suficiente ? (
-        <Button type="button" size="md" className="mt-3" onClick={() => setAberto(true)}>
-          Quero resgatar
-        </Button>
-      ) : (
-        <>
-          <div className="mt-3 rounded-2xl bg-surface px-3 py-3">
-            <p className="text-xs font-semibold text-ink">Você tem {formatPoints(saldoCliente)}</p>
-            <p className="mt-1 text-xs leading-relaxed text-ink/55">
-              Faltam {formatPoints(faltamPontos)} — complete com{" "}
-              <strong className="text-brand-dark">{formatCurrency(faltamReais)}</strong> no
-              atendimento para resgatar.
-            </p>
-          </div>
-          {linkFaltando && (
-            <a
-              href={linkFaltando}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
-            >
-              <MessageCircle size={15} strokeWidth={2} />
-              Falar com atendente
-            </a>
-          )}
-        </>
+      {/* Quando o cliente não tem o saldo cheio, avisa a diferença a pagar. */}
+      {!suficiente && (
+        <div className="mt-3 rounded-2xl bg-surface px-3 py-3">
+          <p className="text-xs font-semibold text-ink">Você tem {formatPoints(saldoCliente)}</p>
+          <p className="mt-1 text-xs leading-relaxed text-ink/55">
+            Pode resgatar usando seus pontos e pagando{" "}
+            <strong className="text-brand-dark">{formatCurrency(diferencaReais)}</strong> de diferença
+            no atendimento.
+          </p>
+        </div>
       )}
 
-      {/* Modal: confirmação do resgate → depois, contato com a empresa */}
+      <Button type="button" size="md" className="mt-3" onClick={() => setAberto(true)}>
+        Quero resgatar
+      </Button>
+
+      {/* Modal: confirmação do resgate → depois, WhatsApp da empresa */}
       {aberto && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-6"
@@ -166,9 +155,22 @@ export function RewardCard({
                 </div>
                 <h3 className="mt-4 text-lg font-bold text-ink">Confirmar resgate</h3>
                 <p className="mt-1 text-sm text-ink/60">
-                  Você quer resgatar <strong className="text-ink">{beneficio.nome}</strong>? Serão
-                  usados <strong className="text-ink">{formatPoints(beneficio.pontosNecessarios)}</strong>{" "}
-                  do seu saldo.
+                  {suficiente ? (
+                    <>
+                      Você quer resgatar <strong className="text-ink">{beneficio.nome}</strong>? Serão
+                      usados{" "}
+                      <strong className="text-ink">{formatPoints(beneficio.pontosNecessarios)}</strong>{" "}
+                      do seu saldo.
+                    </>
+                  ) : (
+                    <>
+                      Você quer resgatar <strong className="text-ink">{beneficio.nome}</strong>? Serão
+                      usados seus <strong className="text-ink">{formatPoints(pontosUsados)}</strong> e
+                      você paga{" "}
+                      <strong className="text-brand-dark">{formatCurrency(diferencaReais)}</strong> de
+                      diferença no atendimento.
+                    </>
+                  )}
                 </p>
 
                 {state.error && (

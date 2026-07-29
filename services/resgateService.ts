@@ -25,14 +25,16 @@ function mapResgate(row: ResgateRow): Resgate {
 export interface ResgateResultado {
   sucesso: boolean;
   mensagem: string;
-  resgate?: Resgate;
+  // Pontos efetivamente usados e a diferença (em R$) a pagar no atendimento
+  // quando o cliente não tinha o saldo cheio.
+  pontosUtilizados?: number;
+  diferencaReais?: number;
 }
 
-// Chama a função SQL "resgatar_beneficio" (supabase/schema.sql), que
-// verifica saldo, desconta pontos, atualiza o nível e grava o resgate em
-// uma única transação com trava de linha (evita corrida em resgates
-// simultâneos). Se o saldo for insuficiente, a função levanta uma exceção
-// com a mensagem amigável, que chega aqui em "error.message".
+// Chama a função SQL "resgatar_beneficio" (supabase/schema.sql), que consome os
+// pontos disponíveis do cliente (até o custo do benefício) e grava o resgate em
+// uma única transação. Se o cliente não tiver o saldo cheio, usa o que tem e
+// devolve a diferença em R$ para pagar no atendimento.
 export async function resgatarBeneficio(clienteId: string, beneficioId: string): Promise<ResgateResultado> {
   const { data, error } = await supabase.rpc("resgatar_beneficio", {
     p_cliente_id: clienteId,
@@ -43,10 +45,13 @@ export async function resgatarBeneficio(clienteId: string, beneficioId: string):
     return { sucesso: false, mensagem: error.message };
   }
 
+  const r = (data ?? {}) as { pontos_utilizados?: number; diferenca_reais?: number };
+
   return {
     sucesso: true,
     mensagem: "Resgate realizado com sucesso!",
-    resgate: mapResgate(data as ResgateRow),
+    pontosUtilizados: r.pontos_utilizados ?? 0,
+    diferencaReais: r.diferenca_reais ?? 0,
   };
 }
 
