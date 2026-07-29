@@ -116,7 +116,17 @@ export function RewardCard({
                   <CheckCircle2 size={28} className="text-brand-dark" strokeWidth={2} />
                 </div>
                 <h3 className="mt-4 text-lg font-bold text-ink">Resgate confirmado!</h3>
-                <p className="mt-1 text-sm text-ink/60">
+                <p className="mt-2 text-sm text-ink">
+                  Você usou <strong>{formatPoints(pontosUsados)}</strong> neste resgate.
+                </p>
+                {!suficiente && diferencaReais > 0 && (
+                  <p className="mt-1 text-sm text-ink/60">
+                    Falta pagar{" "}
+                    <strong className="text-brand-dark">{formatCurrency(diferencaReais)}</strong> de
+                    diferença no atendimento.
+                  </p>
+                )}
+                <p className="mt-2 text-sm text-ink/60">
                   {linkResgatado
                     ? "Abrindo o WhatsApp da TN Clean para você combinar a retirada..."
                     : "Fale com a TN Clean para combinar a retirada do seu benefício."}

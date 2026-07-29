@@ -27,14 +27,28 @@ export async function listarExtratoPontos(clienteId: string): Promise<MovimentoP
       data: item.data,
     }));
 
-  // Resgates de benefícios.
-  const resgates: MovimentoPontos[] = resgatesDoCliente.map((resgate) => ({
-    id: `r-${resgate.id}`,
-    tipo: "resgate",
-    descricao: beneficios.find((b) => b.id === resgate.beneficioId)?.nome ?? "Benefício resgatado",
-    pontos: -resgate.pontosUtilizados,
-    data: resgate.data,
-  }));
+  // Resgates de benefícios. Um resgate estornado aparece com o gasto original
+  // (-pontos) e a devolução (+pontos), deixando o histórico transparente.
+  const resgates: MovimentoPontos[] = resgatesDoCliente.flatMap((resgate) => {
+    const nome = beneficios.find((b) => b.id === resgate.beneficioId)?.nome ?? "Benefício resgatado";
+    const gasto: MovimentoPontos = {
+      id: `r-${resgate.id}`,
+      tipo: "resgate",
+      descricao: resgate.status === "cancelado" ? `${nome} (estornado)` : nome,
+      pontos: -resgate.pontosUtilizados,
+      data: resgate.data,
+    };
+    if (resgate.status !== "cancelado") return [gasto];
+
+    const estorno: MovimentoPontos = {
+      id: `re-${resgate.id}`,
+      tipo: "ganho",
+      descricao: `Estorno: ${nome}`,
+      pontos: resgate.pontosUtilizados,
+      data: resgate.data,
+    };
+    return [gasto, estorno];
+  });
 
   // Pontos usados como desconto em serviços.
   const descontosMov: MovimentoPontos[] = descontos.map((desconto) => ({

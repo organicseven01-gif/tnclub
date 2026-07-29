@@ -11,4 +11,5 @@ export * from "./StatusToggleForm";
 export * from "./ConfirmSubmitButton";
 export * from "./ConfiguracoesForm";
 export * from "./EnviarBoasVindasWhatsApp";
+export * from "./ResgatesCliente";
 export * from "./RankingTable";

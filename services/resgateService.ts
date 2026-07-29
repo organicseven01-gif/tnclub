@@ -55,6 +55,54 @@ export async function resgatarBeneficio(clienteId: string, beneficioId: string):
   };
 }
 
+export interface ResgateDetalhado {
+  id: string;
+  beneficioNome: string;
+  pontosUtilizados: number;
+  status: StatusResgate;
+  data: string;
+}
+
+// Lista os resgates de um cliente já com o nome do benefício — usado no painel
+// admin (ficha do cliente) para permitir o estorno.
+export async function listarResgatesDetalhadosPorCliente(
+  clienteId: string
+): Promise<ResgateDetalhado[]> {
+  const { data, error } = await supabase
+    .from("resgates")
+    .select("id, pontos_utilizados, status, created_at, beneficio:beneficios(nome)")
+    .eq("cliente_id", clienteId)
+    .order("created_at", { ascending: false });
+
+  if (error) lancarErroAmigavel(error, "Não foi possível carregar os resgates.");
+
+  return (data ?? []).map((linha) => {
+    const r = linha as unknown as {
+      id: string;
+      pontos_utilizados: number;
+      status: StatusResgate;
+      created_at: string;
+      beneficio: { nome: string } | null;
+    };
+    return {
+      id: r.id,
+      beneficioNome: r.beneficio?.nome ?? "Benefício",
+      pontosUtilizados: r.pontos_utilizados,
+      status: r.status,
+      data: r.created_at,
+    };
+  });
+}
+
+// Estorna um resgate: devolve os pontos ao cliente e marca como cancelado.
+export async function estornarResgate(resgateId: string): Promise<{ sucesso: boolean; mensagem: string }> {
+  const { error } = await supabase.rpc("estornar_resgate", { p_resgate_id: resgateId });
+  if (error) {
+    return { sucesso: false, mensagem: error.message };
+  }
+  return { sucesso: true, mensagem: "Resgate estornado. Os pontos voltaram para o cliente." };
+}
+
 export async function listarResgatesPorCliente(clienteId: string): Promise<Resgate[]> {
   const { data, error } = await supabase
     .from("resgates")

@@ -412,6 +412,49 @@ begin
 end;
 $$;
 
+-- Estorna um resgate: marca como cancelado e devolve ao cliente os pontos que
+-- foram usados, como um novo lote com validade atual. Usado pelo admin quando
+-- um resgate não dá certo.
+create or replace function public.estornar_resgate(p_resgate_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_resgate    public.resgates%rowtype;
+  v_config     public.configuracoes%rowtype;
+  v_vencimento date;
+begin
+  select * into v_resgate from public.resgates where id = p_resgate_id for update;
+  if not found then
+    raise exception 'Resgate não encontrado.';
+  end if;
+  if v_resgate.status = 'cancelado' then
+    raise exception 'Este resgate já foi estornado.';
+  end if;
+
+  update public.resgates set status = 'cancelado' where id = p_resgate_id;
+
+  -- Devolve os pontos usados como um novo lote (se houver).
+  if v_resgate.pontos_utilizados > 0 then
+    select * into v_config from public.configuracoes where id = 1;
+    if v_config.validade_pontos_ativa then
+      v_vencimento := current_date + (v_config.validade_pontos_dias || ' days')::interval;
+    else
+      v_vencimento := null;
+    end if;
+
+    insert into public.pontos_lotes
+      (cliente_id, pontos, pontos_restantes, data_geracao, data_vencimento)
+    values
+      (v_resgate.cliente_id, v_resgate.pontos_utilizados, v_resgate.pontos_utilizados, current_date, v_vencimento);
+  end if;
+
+  perform public.atualizar_saldo_cliente(v_resgate.cliente_id);
+end;
+$$;
+
 -- Registra uma venda completa: cada item vira um atendimento (com acúmulo de
 -- pontos em lote) e, havendo desconto, consome pontos via FIFO — tudo atômico.
 create or replace function public.registrar_venda(

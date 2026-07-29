@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { criarCliente, atualizarCliente } from "@/services/clienteService";
+import { estornarResgate } from "@/services/resgateService";
 import { enviarEmailBoasVindas } from "@/services/emailService";
 import type { FormState, NivelFidelidade, StatusCliente } from "@/types";
 
@@ -62,4 +63,21 @@ export async function atualizarClienteAction(
 
   revalidarTelasDoCliente(id);
   redirect("/admin/clientes");
+}
+
+// Estorna um resgate: devolve os pontos ao cliente e marca o resgate como
+// cancelado. Usado quando o resgate não dá certo (cliente desistiu, etc.).
+export async function estornarResgateAction(
+  clienteId: string,
+  resgateId: string
+): Promise<{ ok: boolean; erro?: string }> {
+  const resultado = await estornarResgate(resgateId);
+  if (!resultado.sucesso) {
+    return { ok: false, erro: resultado.mensagem };
+  }
+
+  revalidarTelasDoCliente(clienteId);
+  revalidatePath("/pontos");
+  revalidatePath("/historico");
+  return { ok: true };
 }
