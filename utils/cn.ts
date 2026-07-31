@@ -4,7 +4,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 const customTwMerge = extendTailwindMerge({
   extend: {
     classGroups: {
-      shadow: ["shadow-soft", "shadow-card", "shadow-nav"],
+      shadow: ["shadow-soft", "shadow-card", "shadow-nav", "shadow-premium", "shadow-cta", "shadow-cta-hover"],
     },
   },
 });

@@ -27,11 +27,11 @@ export function LoginCard({ whatsapp }: LoginCardProps) {
   return (
     <Card
       padding="lg"
-      className="animate-fade-in-up mt-8 shadow-soft"
+      className="animate-fade-in-up mt-8 rounded-[2rem] border-white/70 bg-white/70 shadow-premium ring-1 ring-black/[0.04] backdrop-blur-xl transition-transform duration-300 ease-out hover:-translate-y-1"
       style={{ animationDelay: "120ms" }}
     >
-      <h2 className="text-xl font-extrabold tracking-tight text-ink">Acesse sua conta</h2>
-      <p className="mt-1.5 text-sm leading-relaxed text-ink/55">
+      <h2 className="text-2xl font-extrabold tracking-tight text-ink">Acesse sua conta</h2>
+      <p className="mt-2 text-sm leading-relaxed text-ink/55">
         Consulte seus pontos, acompanhe seu histórico e descubra seus benefícios.
       </p>
 

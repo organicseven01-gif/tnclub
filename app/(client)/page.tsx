@@ -29,11 +29,18 @@ export default async function LandingPage() {
   const { whatsapp } = await getConfiguracao();
 
   return (
-    <div className="app-surface relative flex min-h-screen flex-col overflow-hidden px-6 py-14">
-      {/* Detalhes discretos em verde claro, puramente decorativos */}
-      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-brand-light/25 blur-3xl" />
-      <div className="pointer-events-none absolute -left-28 top-[38%] h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 right-0 h-56 w-56 rounded-full bg-brand-light/20 blur-3xl" />
+    <div className="login-atmosphere relative flex min-h-screen flex-col overflow-hidden px-6 py-14">
+      {/* Atmosfera premium — luzes verdes difusas, formas orgânicas e um anel
+          geométrico discreto. Puramente decorativo, atrás do conteúdo. */}
+      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#1FA66A]/25 blur-3xl" />
+      <div className="pointer-events-none absolute -left-28 top-[34%] h-64 w-64 rounded-full bg-[#1FA66A]/12 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 right-0 h-60 w-60 rounded-full bg-brand-light/25 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-brand-dark/10 blur-3xl" />
+      {/* Anel geométrico abstrato (linha fina, quase imperceptível) */}
+      <div className="pointer-events-none absolute -right-20 top-[46%] h-72 w-72 rounded-full border border-[#1FA66A]/10" />
+      <div className="pointer-events-none absolute -left-24 -top-10 h-52 w-52 rounded-full border border-[#1FA66A]/10" />
+      {/* Foco de luz suave que mantém o centro (cartão) em evidência */}
+      <div className="login-spotlight pointer-events-none absolute inset-0" />
 
       <div className="relative flex flex-1 flex-col">
         <div className="animate-fade-in-up flex flex-col items-center text-center">
