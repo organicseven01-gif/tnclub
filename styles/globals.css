@@ -12,12 +12,36 @@ body {
 }
 
 body {
-  color: #222222;
-  background-color: #f5f5f5;
+  color: #1c1c1c;
+  /* Fundo sofisticado: neutro suave com brilhos verdes muito discretos,
+     criando profundidade sem competir com o conteúdo. */
+  background-color: #eef1ee;
+  background-image:
+    radial-gradient(58% 44% at 12% -6%, rgba(87, 200, 120, 0.14), transparent 60%),
+    radial-gradient(52% 42% at 104% 12%, rgba(31, 122, 74, 0.1), transparent 58%),
+    radial-gradient(46% 40% at 50% 108%, rgba(18, 71, 52, 0.08), transparent 60%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Superfície interna das telas do app: um branco que desce para um verde-névoa
+   quase imperceptível — evita a "tela branca chapada". */
+.app-surface {
+  background-image:
+    radial-gradient(120% 70% at 50% -8%, rgba(87, 200, 120, 0.12), transparent 56%),
+    linear-gradient(180deg, #ffffff 0%, #f4f7f4 34%, #eef2ee 100%);
+}
+
+/* Glassmorphism sutil para barras fixas (header / navegação). */
+.glass {
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
 }
 
 @keyframes fade-in-up {
@@ -33,4 +57,29 @@ body {
 
 .animate-fade-in-up {
   animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Brilho que desliza pelo cartão de pontos — luxo discreto, roda uma vez. */
+@keyframes sheen {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(240%) skewX(-12deg);
+  }
+}
+
+.animate-sheen {
+  animation: sheen 2.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+/* Respeita quem prefere menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-sheen {
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto;
+  }
 }

@@ -21,7 +21,7 @@ export function Input({ label, icon, className, id, ...rest }: InputProps) {
         <input
           id={id}
           className={cn(
-            "h-12 w-full rounded-2xl border border-black/5 bg-surface px-4 text-sm text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-brand focus:bg-white",
+            "h-12 w-full rounded-2xl border border-black/[0.08] bg-white px-4 text-sm text-ink placeholder:text-ink/35 outline-none transition-all duration-200 hover:border-black/15 focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/10",
             icon && "pl-11",
             className
           )}

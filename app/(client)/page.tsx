@@ -29,27 +29,31 @@ export default async function LandingPage() {
   const { whatsapp } = await getConfiguracao();
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-white px-6 py-12">
+    <div className="app-surface relative flex min-h-screen flex-col overflow-hidden px-6 py-14">
       {/* Detalhes discretos em verde claro, puramente decorativos */}
-      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-brand-light/20 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-brand-light/25 blur-3xl" />
       <div className="pointer-events-none absolute -left-28 top-[38%] h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-16 right-0 h-56 w-56 rounded-full bg-brand-light/15 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-16 right-0 h-56 w-56 rounded-full bg-brand-light/20 blur-3xl" />
 
       <div className="relative flex flex-1 flex-col">
         <div className="animate-fade-in-up flex flex-col items-center text-center">
-          <div className="h-24 w-24 overflow-hidden rounded-[28px] shadow-card">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-0 -z-10 scale-125 rounded-full bg-brand-light/20 blur-2xl" />
+            <div className="h-28 w-28 overflow-hidden rounded-[32px] shadow-premium ring-1 ring-black/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
+            </div>
           </div>
-          <h1 className="mt-5 text-2xl font-bold tracking-tight text-ink">
+          <span className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-brand/15 bg-white/70 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-dark">
+            <Sparkles size={13} className="text-brand" strokeWidth={2} />
+            Clube de Benefícios
+          </span>
+          <h1 className="mt-4 text-[26px] font-extrabold leading-tight tracking-tight text-ink">
             Clube de Benefícios TN Clean
           </h1>
-          <p className="mt-2 max-w-[280px] text-sm leading-relaxed text-ink/55">
+          <p className="mt-3 max-w-[290px] text-sm leading-relaxed text-ink/55">
             A cada serviço realizado você acumula pontos e troca por benefícios exclusivos.
           </p>
-          <div className="mt-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light/15">
-            <Sparkles size={18} className="text-brand" strokeWidth={1.75} />
-          </div>
         </div>
 
         <LoginCard whatsapp={whatsapp} />
@@ -58,21 +62,21 @@ export default async function LandingPage() {
           {beneficios.map((item) => (
             <div
               key={item.titulo}
-              className="flex items-center gap-4 rounded-3xl bg-surface px-5 py-4"
+              className="flex items-center gap-4 rounded-3xl border border-white/60 bg-white/70 px-5 py-4 shadow-card ring-1 ring-black/[0.03] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white shadow-card">
-                <item.icon size={19} className="text-brand" strokeWidth={1.75} />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/10 ring-1 ring-brand/10">
+                <item.icon size={20} className="text-brand" strokeWidth={1.75} />
               </div>
               <div>
                 <p className="text-sm font-bold text-ink">{item.titulo}</p>
-                <p className="text-xs text-ink/50">{item.descricao}</p>
+                <p className="mt-0.5 text-xs text-ink/50">{item.descricao}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="relative mt-10 border-t border-black/5 pt-6 text-center">
+      <div className="relative mt-12 border-t border-black/5 pt-6 text-center">
         <p className="text-xs text-ink/40">© 2026 TN Club</p>
         <p className="mt-0.5 text-xs text-ink/40">Programa Oficial de Benefícios da TN Clean.</p>
         <Link

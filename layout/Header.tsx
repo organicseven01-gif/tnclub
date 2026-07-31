@@ -11,14 +11,14 @@ export function Header({ title, subtitle, whatsapp }: HeaderProps) {
   const ajudaLink = whatsapp ? linkWhatsAppAjuda(whatsapp) : null;
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-white/90 px-5 pb-4 pt-6 backdrop-blur">
+    <header className="glass sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-black/[0.05] px-5 pb-4 pt-6">
       <div className="flex items-center gap-3">
-        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-2xl">
+        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
         </div>
         <div>
-          <h1 className="text-lg font-bold leading-tight text-ink">{title}</h1>
+          <h1 className="text-lg font-bold leading-tight tracking-tight text-ink">{title}</h1>
           {subtitle && <p className="text-xs text-ink/50">{subtitle}</p>}
         </div>
       </div>
@@ -28,7 +28,7 @@ export function Header({ title, subtitle, whatsapp }: HeaderProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Ajuda pelo WhatsApp"
-          className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-brand px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-brand-gradient px-4 text-sm font-semibold text-white shadow-cta transition-all hover:-translate-y-0.5 hover:shadow-cta-hover active:translate-y-0"
         >
           <HelpCircle size={16} strokeWidth={2} />
           Ajuda

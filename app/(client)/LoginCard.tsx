@@ -30,8 +30,8 @@ export function LoginCard({ whatsapp }: LoginCardProps) {
       className="animate-fade-in-up mt-8 shadow-soft"
       style={{ animationDelay: "120ms" }}
     >
-      <h2 className="text-lg font-bold text-ink">Acesse sua conta</h2>
-      <p className="mt-1 text-sm text-ink/55">
+      <h2 className="text-xl font-extrabold tracking-tight text-ink">Acesse sua conta</h2>
+      <p className="mt-1.5 text-sm leading-relaxed text-ink/55">
         Consulte seus pontos, acompanhe seu histórico e descubra seus benefícios.
       </p>
 

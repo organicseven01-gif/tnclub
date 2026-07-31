@@ -26,10 +26,13 @@ type ButtonAsLink = BaseProps & {
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: "bg-brand text-white hover:bg-brand-dark active:bg-brand-dark",
-  secondary: "bg-brand-dark text-white hover:opacity-90",
-  outline: "border-2 border-brand text-brand hover:bg-brand/5",
-  ghost: "text-brand hover:bg-brand/5",
+  primary:
+    "bg-brand-gradient text-white shadow-cta hover:shadow-cta-hover hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985]",
+  secondary:
+    "bg-brand-dark text-white shadow-card hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0 active:scale-[0.985]",
+  outline:
+    "border border-brand/30 bg-white/60 text-brand-dark hover:border-brand hover:bg-white active:scale-[0.985]",
+  ghost: "text-brand hover:bg-brand/5 active:scale-[0.985]",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -48,7 +51,7 @@ export function Button(props: ButtonProps) {
   } = props;
 
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-colors duration-200 disabled:opacity-50 disabled:pointer-events-none",
+    "inline-flex items-center justify-center gap-2 rounded-2xl font-semibold transition-all duration-200 ease-out will-change-transform disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none disabled:translate-y-0",
     variantStyles[variant],
     sizeStyles[size],
     fullWidth && "w-full",

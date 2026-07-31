@@ -45,7 +45,12 @@
       "Bash(curl -s -X POST https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"nome\":\"__teste_ajuda__\",\"telefone\":\"11955554444\",\"cpf\":\"55544433322\",\"email\":\"teste.ajuda@example.com\",\"saldo_pontos\":300}' -o /dev/null -w 'cliente \\(HTTP %{http_code}\\)\\\\n')",
       "Bash(curl -s -X DELETE https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/clientes?cpf=eq.55544433322 -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -o /dev/null -w 'cliente removido \\(HTTP %{http_code}\\)\\\\n')",
       "Bash(curl -s -X POST https://lhuynigdrlsaqaplosqo.supabase.co/rest/v1/rpc/salvar_configuracao -H 'apikey: sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Authorization: Bearer sb_publishable_37qFnFsX9XkuAr64BAasbg_hi187Jvk' -H 'Content-Type: application/json' -d '{\"p_whatsapp\":\"\",\"p_limite_prata\":500,\"p_limite_ouro\":1500,\"p_limite_platina\":3000,\"p_limite_diamante\":6000}' -o /dev/null -w 'whatsapp limpo \\(HTTP %{http_code}\\)\\\\n')",
-      "Bash(curl -sI -m 20 https://tnclub.com.br)"
+      "Bash(curl -sI -m 20 https://tnclub.com.br)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Read(//tmp/**)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
