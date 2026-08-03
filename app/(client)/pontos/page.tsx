@@ -16,7 +16,7 @@ export default async function MeusPontosPage() {
 
   if (!cliente) {
     return (
-      <PageShell title="Meus pontos" subtitle="Consulta de saldo e progresso">
+      <PageShell title="Meus pontos" subtitle="Saldo e progresso">
         <SemClienteState />
       </PageShell>
     );
@@ -30,7 +30,7 @@ export default async function MeusPontosPage() {
   ]);
 
   return (
-    <PageShell title="Meus pontos" subtitle="Consulta de saldo e progresso">
+    <PageShell title="Meus pontos" subtitle="Saldo e progresso">
       <PointsCard
         saldoPontos={cliente.saldoPontos}
         nivel={cliente.nivel}

@@ -12,14 +12,14 @@ export function Header({ title, subtitle, whatsapp }: HeaderProps) {
 
   return (
     <header className="glass sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-black/[0.05] px-5 pb-4 pt-6">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl shadow-card ring-1 ring-black/5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo-icone.jpg" alt="TN Club" className="h-full w-full object-cover" />
         </div>
-        <div>
-          <h1 className="text-lg font-bold leading-tight tracking-tight text-ink">{title}</h1>
-          {subtitle && <p className="text-xs text-ink/50">{subtitle}</p>}
+        <div className="min-w-0">
+          <h1 className="truncate text-lg font-bold leading-tight tracking-tight text-ink">{title}</h1>
+          {subtitle && <p className="truncate text-xs text-ink/50">{subtitle}</p>}
         </div>
       </div>
       {ajudaLink && (
