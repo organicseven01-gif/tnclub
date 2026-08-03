@@ -12,8 +12,9 @@ const estilos: Record<
   { icon: typeof ArrowUpRight; bg: string; cor: string; valor: string }
 > = {
   ganho: { icon: ArrowUpRight, bg: "bg-brand/10", cor: "text-brand", valor: "text-brand" },
-  resgate: { icon: Gift, bg: "bg-ink/5", cor: "text-ink/50", valor: "text-ink/50" },
-  desconto: { icon: Tag, bg: "bg-ink/5", cor: "text-ink/50", valor: "text-ink/50" },
+  // Resgate e desconto tiram pontos da conta → destaque em vermelho.
+  resgate: { icon: Gift, bg: "bg-red-50", cor: "text-red-600", valor: "text-red-600" },
+  desconto: { icon: Tag, bg: "bg-red-50", cor: "text-red-600", valor: "text-red-600" },
   expiracao: { icon: Clock, bg: "bg-amber-50", cor: "text-amber-600", valor: "text-amber-600" },
 };
 
