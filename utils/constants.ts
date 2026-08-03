@@ -18,7 +18,7 @@ export const PROGRAM_NAME = "TN Club";
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Meus Pontos", href: "/pontos", icon: Sparkles },
+  { label: "Pontos", href: "/pontos", icon: Sparkles },
   { label: "Histórico", href: "/historico", icon: Clock },
   { label: "Benefícios", href: "/beneficios", icon: Gift },
   { label: "Perfil", href: "/perfil", icon: User },

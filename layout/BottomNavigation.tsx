@@ -19,7 +19,7 @@ export function BottomNavigation() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-1 flex-col items-center gap-1 rounded-2xl px-2 py-1.5 text-[11px] font-medium transition-all duration-200 active:scale-95",
+              "flex flex-1 flex-col items-center gap-1 whitespace-nowrap rounded-2xl px-1 py-1.5 text-[11px] font-medium transition-all duration-200 active:scale-95",
               isActive ? "bg-brand/[0.07] text-brand-dark" : "text-ink/40 hover:text-ink/60"
             )}
           >
