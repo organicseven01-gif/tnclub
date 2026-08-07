@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { criarCliente, atualizarCliente } from "@/services/clienteService";
+import { criarCliente, atualizarCliente, excluirCliente } from "@/services/clienteService";
 import { estornarResgate } from "@/services/resgateService";
 import { enviarEmailBoasVindas } from "@/services/emailService";
 import type { FormState, NivelFidelidade, StatusCliente } from "@/types";
@@ -63,6 +63,20 @@ export async function atualizarClienteAction(
 
   revalidarTelasDoCliente(id);
   redirect("/admin/clientes");
+}
+
+// Exclui o cliente e todo o histórico dele (uso em testes).
+export async function excluirClienteAction(id: string): Promise<{ ok: boolean; erro?: string }> {
+  try {
+    await excluirCliente(id);
+  } catch (error) {
+    return { ok: false, erro: error instanceof Error ? error.message : "Não foi possível excluir o cliente." };
+  }
+
+  revalidarTelasDoCliente(id);
+  revalidatePath("/admin/historico");
+  revalidatePath("/admin/ranking");
+  return { ok: true };
 }
 
 // Estorna um resgate: devolve os pontos ao cliente e marca o resgate como

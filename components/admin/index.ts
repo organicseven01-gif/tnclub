@@ -12,4 +12,5 @@ export * from "./ConfirmSubmitButton";
 export * from "./ConfiguracoesForm";
 export * from "./EnviarBoasVindasWhatsApp";
 export * from "./ResgatesCliente";
+export * from "./ExcluirClienteButton";
 export * from "./RankingTable";

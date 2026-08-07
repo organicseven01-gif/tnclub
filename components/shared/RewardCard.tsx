@@ -46,7 +46,7 @@ export function RewardCard({
           `Benefício: ${beneficio.nome}`,
           `Pontos utilizados: ${pontosUsados}`,
           ``,
-          `Podemos combinar a retirada?`,
+          `Podemos agendar o serviço?`,
         ]
       : [
           `Olá! Acabei de resgatar um benefício no TN Club.`,
@@ -56,7 +56,7 @@ export function RewardCard({
           `Usei meus ${pontosUsados} pontos.`,
           `Falta pagar: ${formatCurrency(diferencaReais)}`,
           ``,
-          `Podemos combinar o restante?`,
+          `Podemos agendar o serviço?`,
         ]
     ).join("\n")
   );

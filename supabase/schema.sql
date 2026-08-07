@@ -455,6 +455,25 @@ begin
 end;
 $$;
 
+-- Exclui um cliente e TODO o histórico dele (descontos, resgates, lotes de
+-- pontos e atendimentos), numa única transação. As FKs de atendimentos e
+-- resgates são "on delete restrict", por isso apagamos os filhos em ordem
+-- antes do cliente. Usado no painel admin para limpar clientes de teste.
+create or replace function public.excluir_cliente(p_cliente_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  delete from public.descontos_pontos where cliente_id = p_cliente_id;
+  delete from public.resgates where cliente_id = p_cliente_id;
+  delete from public.pontos_lotes where cliente_id = p_cliente_id;
+  delete from public.atendimentos where cliente_id = p_cliente_id;
+  delete from public.clientes where id = p_cliente_id;
+end;
+$$;
+
 -- Registra uma venda completa: cada item vira um atendimento (com acúmulo de
 -- pontos em lote) e, havendo desconto, consome pontos via FIFO — tudo atômico.
 create or replace function public.registrar_venda(

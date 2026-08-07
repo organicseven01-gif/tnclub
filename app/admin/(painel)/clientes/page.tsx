@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Plus, Eye, Pencil } from "lucide-react";
-import { PageHeader, SearchBar } from "@/components/admin";
+import { PageHeader, SearchBar, ExcluirClienteButton } from "@/components/admin";
 import { Table, Badge, Button } from "@/components/ui";
 import type { TableColumn } from "@/components/ui";
 import { listarClientes } from "@/services/clienteService";
+import { excluirClienteAction } from "./actions";
 import { TIER_LABELS, STATUS_CLIENTE_LABELS } from "@/utils/constants";
 import { formatPoints } from "@/utils/formatters";
 import type { Cliente } from "@/types";
@@ -53,6 +54,11 @@ export default async function ClientesPage({ searchParams }: ClientesPageProps) 
           >
             <Pencil size={14} /> Editar
           </Link>
+          <ExcluirClienteButton
+            clienteId={cliente.id}
+            clienteNome={cliente.nome}
+            action={excluirClienteAction}
+          />
         </div>
       ),
     },

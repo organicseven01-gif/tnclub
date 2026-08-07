@@ -50,7 +50,8 @@
       "Read(//tmp/**)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(curl -s 'https://vvjhnhiadryyiyoqjohq.supabase.co/rest/v1/configuracoes?id=eq.1&select=validade_pontos_ativa,validade_pontos_dias,reais_por_ponto,pontos_por_real_desconto' -H 'apikey: sb_publishable_vzVwVylccaG1ym0ymjXPlA_lKGj-zF8' -H 'Authorization: Bearer sb_publishable_vzVwVylccaG1ym0ymjXPlA_lKGj-zF8')"
     ]
   }
 }

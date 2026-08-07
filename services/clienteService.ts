@@ -132,6 +132,14 @@ export async function criarCliente(dados: DadosNovoCliente): Promise<Cliente> {
   return mapCliente(data);
 }
 
+// Exclui o cliente e TODO o histórico dele (atendimentos, resgates, lotes de
+// pontos e descontos) numa única transação, via função SQL "excluir_cliente".
+// Usado nos testes para limpar clientes da base.
+export async function excluirCliente(id: string): Promise<void> {
+  const { error } = await supabase.rpc("excluir_cliente", { p_cliente_id: id });
+  if (error) lancarErroAmigavel(error, "Não foi possível excluir o cliente.");
+}
+
 export async function atualizarCliente(id: string, dados: DadosAtualizarCliente): Promise<Cliente> {
   const { data, error } = await supabase
     .from("clientes")
