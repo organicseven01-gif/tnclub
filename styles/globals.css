@@ -41,13 +41,12 @@ body {
    #1FA66A) sobre uma base branca → cinza-suave, criando profundidade viva
    sem competir com o cartão central. */
 .login-atmosphere {
-  background-color: #f5f7f8;
+  background-color: #f6f8f7;
   background-image:
-    radial-gradient(40% 32% at 16% 6%, rgba(31, 166, 106, 0.2), transparent 62%),
-    radial-gradient(36% 30% at 90% 10%, rgba(31, 166, 106, 0.14), transparent 64%),
-    radial-gradient(30% 26% at 82% 74%, rgba(87, 200, 120, 0.16), transparent 66%),
-    radial-gradient(48% 42% at 50% 112%, rgba(18, 71, 52, 0.12), transparent 62%),
-    linear-gradient(180deg, #ffffff 0%, #f5f7f8 56%, #eef2ef 100%);
+    /* brilho verde-claro bem suave atrás do topo/logo */
+    radial-gradient(68% 46% at 50% -6%, rgba(60, 203, 108, 0.14), transparent 70%),
+    /* base clara → cinza-esverdeado quase imperceptível */
+    linear-gradient(180deg, #ffffff 0%, #f6f8f7 58%, #eef3ef 100%);
 }
 
 /* Realce suave e claro atrás do cartão central — mantém o foco no meio. */

@@ -30,15 +30,49 @@ export default async function LandingPage() {
 
   return (
     <div className="login-atmosphere relative flex min-h-screen flex-col overflow-hidden px-6 py-14">
-      {/* Atmosfera premium — luzes verdes difusas, formas orgânicas e um anel
-          geométrico discreto. Puramente decorativo, atrás do conteúdo. */}
-      <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-[#1FA66A]/25 blur-3xl" />
-      <div className="pointer-events-none absolute -left-28 top-[34%] h-64 w-64 rounded-full bg-[#1FA66A]/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-20 right-0 h-60 w-60 rounded-full bg-brand-light/25 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -left-16 h-56 w-56 rounded-full bg-brand-dark/10 blur-3xl" />
-      {/* Anel geométrico abstrato (linha fina, quase imperceptível) */}
-      <div className="pointer-events-none absolute -right-20 top-[46%] h-72 w-72 rounded-full border border-[#1FA66A]/10" />
-      <div className="pointer-events-none absolute -left-24 -top-10 h-52 w-52 rounded-full border border-[#1FA66A]/10" />
+      {/* Brilho verde-claro sutil atrás do topo/logo */}
+      <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#3CCB6C]/20 blur-3xl" />
+
+      {/* Ondas orgânicas na base — curvas suaves, baixa opacidade (5–15%),
+          nos três verdes da marca. Criam profundidade sem competir com o
+          conteúdo. */}
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[54%] w-full"
+        viewBox="0 0 400 300"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="onda1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#0D7A43" />
+            <stop offset="1" stopColor="#18A558" />
+          </linearGradient>
+          <linearGradient id="onda2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#18A558" />
+            <stop offset="1" stopColor="#3CCB6C" />
+          </linearGradient>
+          <linearGradient id="onda3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#3CCB6C" />
+            <stop offset="1" stopColor="#18A558" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0,132 C90,86 150,150 220,124 C298,95 356,150 400,116 L400,300 L0,300 Z"
+          fill="url(#onda1)"
+          opacity="0.06"
+        />
+        <path
+          d="M0,182 C96,140 168,206 256,172 C324,146 372,196 400,168 L400,300 L0,300 Z"
+          fill="url(#onda2)"
+          opacity="0.09"
+        />
+        <path
+          d="M0,228 C104,196 176,252 262,224 C332,202 380,236 400,220 L400,300 L0,300 Z"
+          fill="url(#onda3)"
+          opacity="0.12"
+        />
+      </svg>
+
       {/* Foco de luz suave que mantém o centro (cartão) em evidência */}
       <div className="login-spotlight pointer-events-none absolute inset-0" />
 
